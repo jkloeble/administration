@@ -1,0 +1,3959 @@
+<!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════════╗
+║  GRUNDGERÜST – SO FUNKTIONIERT DIESE DATEI                               ║
+║                                                                          ║
+║  Diese Datei ist eine "Folien-Webseite": Es gibt eine Startseite und     ║
+║  danach mehrere Phasen, durch die man mit "Weiter" klickt.               ║
+║                                                                          ║
+║  Überall wo du ✏️ siehst, kannst/musst du etwas anpassen.                 ║
+║  Alles in [eckigen Klammern] ist ein Platzhalter für deinen Text.        ║
+║  Tipp: Suche in deinem Editor nach "✏️" oder "[" um alle Stellen zu       ║
+║  finden.                                                                 ║
+║                                                                          ║
+║  AUFBAU DER DATEI:                                                       ║
+║   1. <head>   → Seitentitel, Icon im Browser-Tab, Schriften              ║
+║   2. <style>  → Design (Farben, Abstände, Bausteine)                     ║
+║   3. <body>   → Kopfleiste oben, Navigation unten                        ║
+║   4. <script> → HIER STEHT DER INHALT! Suche nach "INHALT DER PHASEN"    ║
+║                                                                          ║
+║  Die Inhalte der Phasen stehen NICHT im HTML, sondern im JavaScript      ║
+║  (Abschnitt "INHALT DER PHASEN"). Dort findest du für jeden Baustein     ║
+║  ein Beispiel, das du kopieren, umschreiben oder löschen kannst.         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="de"> <!-- ✏️ Sprache der Seite: "de" = Deutsch, "en" = Englisch -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✏️ SEITENTITEL: Dieser Text steht oben im Browser-Tab und bei Google -->
+    <title>Digitalisierung in der Verwaltung</title>
+
+    <!-- ✏️ BESCHREIBUNG: Kurzer Text, den Google unter dem Link anzeigt (ca. 150 Zeichen) -->
+    <!--<meta name="description" content="[Kurze Beschreibung deiner Seite]"> -->
+
+    <!-- ✏️ FAVICON (kleines Icon im Browser-Tab):
+     Direkt eingebettet als SVG (DASU-Achteck aus dem Logo oben rechts) – keine Bilddatei nötig.
+     Farbe ändern: "%230000F5" ersetzen (%23 steht für #, also z.B. %236900F4 für Lila). -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='29 29 54 54'%3E%3Cpath fill='%230000F5' fill-rule='evenodd' d='M74.782,37.226,56.019,29.491,37.261,37.226,29.492,55.9,37.261,74.58l18.76,7.734,18.763-7.732L82.557,55.9Zm-.034,37.319H37.3V37.262H74.748Z'/%3E%3C/svg%3E">
+
+    <!-- ✏️ SCHRIFTARTEN von Google Fonts (fonts.google.com).
+     Andere Schrift gewünscht? Auf fonts.google.com Schrift auswählen, den Link
+     kopieren und hier ersetzen. Danach im <style> die Schriftnamen
+     ('Outfit', 'DM Sans', 'Unbounded') durch die neuen ersetzen. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Unbounded:wght@800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+   ✏️ FARBEN DER SEITE – HIER ZENTRAL ANPASSEN
+   Ändere die Hex-Werte (#......), dann ändern sich die Farben überall.
+   --bg       = Hintergrund der Seite
+   --text     = Haupt-Textfarbe
+   --dim      = gedämpfte Textfarbe (Beschreibungen)
+   --hint     = sehr helle Textfarbe (kleine Labels)
+   --accent   = Akzentfarbe (Buttons, Fortschrittsbalken, Links)
+   Tipp: Einige Lila-Töne (#3D008D, #6900F4, #8B36FC) und Gelb/Gold
+   (#FFBF00, #FFE800) stehen direkt in den Bausteinen unten – mit
+   "Suchen & Ersetzen" kannst du sie auf einmal austauschen.
+   ═══════════════════════════════════════════════════════════════════ */
+        :root {
+            --bg: #FFFFFF;
+            --surface: #FFFFFF;
+            --surface2: #EBEBFD;
+            --border: #DCDCF5;
+            --border-d: #ADADEA;
+            --text: #050520;
+            --dim: #3A3A6A;
+            --hint: #50509A;
+            --accent: #0000F5;
+            --acc-light: rgba(0, 0, 245, 0.09);
+            --acc-border: rgba(0, 0, 245, 0.28);
+            --ok-bg: rgba(20, 83, 45, 0.08);
+            --ok-text: #14532D;
+            --err-bg: rgba(153, 27, 27, 0.07);
+            --err-text: #991B1B;
+            --shadow-sm: 0 1px 3px rgba(13, 27, 46, 0.07), 0 2px 8px rgba(13, 27, 46, 0.05);
+            --shadow-md: 0 2px 6px rgba(13, 27, 46, 0.09), 0 8px 24px rgba(13, 27, 46, 0.07);
+            --shadow-lg: 0 4px 12px rgba(13, 27, 46, 0.12), 0 16px 40px rgba(13, 27, 46, 0.09);
+        }
+
+        /* ✏️ Grundschrift der Seite: 'DM Sans' – wenn du die Schrift änderst, auch den Google-Fonts-Link im <head> anpassen */
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ── Fortschrittsbalken ganz oben (Farbe kommt aus --accent) ── */
+        #progress-track {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 200;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.5s cubic-bezier(.4, 0, .2, 1);
+            width: 0%;
+        }
+
+        /* ── Kopfleiste oben (Marke links, Logo rechts) ── */
+        #topbar {
+            position: fixed;
+            top: 2px;
+            left: 0;
+            right: 0;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        .brand {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            transition: transform 0.18s ease, opacity 0.18s;
+            display: inline-block;
+        }
+
+        .brand:hover {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+
+        #phase-counter a {
+            transition: transform 0.18s ease, opacity 0.18s;
+            display: inline-flex;
+        }
+
+        #phase-counter a:hover {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+
+        .brand-ki {
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 800;
+        }
+
+        .brand em {
+            font-family: 'Outfit', sans-serif;
+            color: #6900F4;
+            font-style: italic;
+            font-size: 1.35em;
+            font-weight: 700;
+        }
+
+        .brand em .dot-gold {
+            color: #FFBF00;
+        }
+
+        .phase-counter {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--hint);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* ── Punkte-Navigation rechts am Rand ── */
+        #dot-nav {
+            position: fixed;
+            right: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border-d);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .dot::before {
+            content: attr(data-label);
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dim);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            background: var(--surface);
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .dot:hover::before {
+            opacity: 1;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            transform: scale(1.6);
+        }
+
+        .dot:hover:not(.active) {
+            background: var(--dim);
+        }
+
+        /* ── Bereich, in dem die Folien/Phasen angezeigt werden ── */
+        #slide-viewport {
+            position: fixed;
+            top: 66px;
+            left: 0;
+            right: 0;
+            bottom: 76px;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: stretch;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.42s ease, transform 0.42s cubic-bezier(.4, 0, .2, 1);
+            transform: translateY(28px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* ── Aufbau einer Phase: linke farbige Spalte + rechter Inhaltsbereich ──
+   ✏️ Farbe der linken Spalte: background:#3D008D in .slide-left ändern
+   ✏️ Breite der linken Spalte: width:300px in .slide-left ändern */
+        .slide-left {
+            width: clamp(320px, 30vw, 500px);
+            min-width: 300px;
+            background: #3D008D;
+            border-right: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 2.75rem;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .slide-bg-num {
+            position: absolute;
+            bottom: -1rem;
+            left: -0.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(220px, 22vw, 340px);
+            font-weight: 700;
+            line-height: 1;
+            color: rgba(119, 16, 255, 0.35);
+            pointer-events: none;
+            user-select: none;
+            opacity: 1;
+        }
+
+        .slide-eyebrow {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(34px, 3.8vw, 60px);
+            font-weight: 700;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-intro {
+            font-size: clamp(17px, 1.4vw, 23px);
+            font-weight: 400;
+            color: #FFFFFF;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-right {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem 3rem 3rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+            background: linear-gradient(to bottom, #FFFFFF 40%, #EBEBFD 100%);
+        }
+
+        .slide-right>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-right::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide-right::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        /* ── Navigationsleiste unten (Zurück / Weiter / Feedback) ── */
+        #bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 3.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .nav-hint {
+            font-size: 14px;
+            color: var(--hint);
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key-hint {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 7px;
+            font-size: 13px;
+            color: var(--dim);
+            font-weight: 700;
+        }
+
+        .nav-arrows {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border-d);
+            background: var(--surface);
+            color: var(--dim);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--acc-light);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            width: auto;
+            padding: 0 28px;
+            height: 50px;
+            border-radius: 99px;
+            font-size: 17px;
+            font-weight: 700;
+            gap: 6px;
+        }
+
+        #btn-prev {
+            border-color: #FFBF00;
+            color: #1A1A1A;
+            background: #FFBF00;
+        }
+
+        #btn-prev:hover:not(:disabled) {
+            border-color: #FFD740;
+            background: #FFD740;
+            color: #1A1A1A;
+        }
+
+        /* ── Große Zahl, die beim Wechseln der Phase kurz aufblitzt ── */
+        #transition-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .transition-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28vw;
+            font-weight: 700;
+            color: var(--accent);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            line-height: 1;
+            user-select: none;
+        }
+
+        /* ── STARTSEITE (Hero) ── */
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.42s ease, transform 0.42s cubic-bezier(.4, 0, .2, 1);
+            transform: translateY(28px);
+            background: var(--bg);
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .hero-inner {
+            max-width: 1000px;
+            padding: 2.5rem 3rem;
+            text-align: center;
+            position: relative;
+        }
+
+        /* ── Pulsieren der Startseite ──
+   Der Freiraum um den Text und die Wellen entstehen im Punkte-Hintergrund (JavaScript, "PARTIKEL-HINTERGRUND").
+   ✏️ Pulsieren zu stark? Unten bei den @keyframes die Werte abschwächen. */
+        .hero-title em {
+            animation: hero-glow 3.2s ease-in-out infinite;
+        }
+
+        .hero-title em .dot-gold {
+            display: inline-block;
+            animation: hero-dot 3.2s ease-in-out infinite;
+        }
+
+        .hero-phase-dot {
+            animation: hero-phase-pulse 3.2s ease-in-out infinite;
+            animation-delay: calc(var(--i, 0) * 0.25s);
+        }
+
+        .hero-cta {
+            position: relative;
+        }
+
+        .hero-cta::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: 0 0 0 0 rgba(0, 0, 245, 0.45);
+            animation: hero-ring 3.2s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes hero-glow {
+            50% {
+                text-shadow: 0 0 34px rgba(105, 0, 244, 0.35);
+            }
+        }
+
+        @keyframes hero-dot {
+            50% {
+                transform: scale(1.35);
+            }
+        }
+
+        @keyframes hero-phase-pulse {
+
+            0%,
+            30%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(105, 0, 244, 0);
+            }
+
+            15% {
+                transform: scale(1.5);
+                box-shadow: 0 0 0 6px rgba(105, 0, 244, 0.18);
+            }
+        }
+
+        @keyframes hero-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 245, 0.45);
+            }
+
+            70%,
+            100% {
+                box-shadow: 0 0 0 22px rgba(0, 0, 245, 0);
+            }
+        }
+
+        @media (max-height: 700px) {
+            .hero-title {
+                font-size: clamp(32px, 5vw, 56px);
+                margin-bottom: 1rem;
+            }
+
+            .hero-phases {
+                margin-bottom: 1.5rem;
+            }
+
+            .hero-inner {
+                padding: 1.5rem 2rem;
+            }
+        }
+
+        @media (min-height: 900px) {
+            .hero-title {
+                font-size: clamp(60px, 9vw, 110px);
+            }
+
+            .hero-phases {
+                margin-bottom: 3.5rem;
+            }
+        }
+
+        @media (min-height: 1100px) {
+            .hero-title {
+                font-size: clamp(70px, 10vw, 130px);
+            }
+        }
+
+        .hero-overline {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .hero-overline::before,
+        .hero-overline::after {
+            content: '';
+            flex: 1;
+            max-width: 60px;
+            height: 1px;
+            background: var(--acc-border);
+        }
+
+        .hero-title {
+            font-size: clamp(52px, 8vw, 92px);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 1.75rem;
+        }
+
+        .hero-title .ki {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(32px, 5vw, 58px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: block;
+        }
+
+        .hero-title em {
+            font-family: 'Outfit', sans-serif;
+            color: #6900F4;
+            font-style: italic;
+            display: block;
+        }
+
+        .hero-title em .dot-gold {
+            color: #FFBF00;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(18px, 1.7vw, 26px);
+            font-weight: 400;
+            color: var(--dim);
+            line-height: 1.6;
+            max-width: 760px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-phases {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 3rem;
+        }
+
+        .hero-phase-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-subtitle strong {
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .hero-phase-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3D008D;
+            transition: background 0.2s;
+        }
+
+        .hero-phase-dot.first {
+            background: #3D008D;
+        }
+
+        .hero-phase-line {
+            width: 56px;
+            height: 2px;
+            background: var(--border);
+            margin-top: 5px;
+        }
+
+        .hero-phase-label {
+            font-size: clamp(13px, 1.1vw, 17px);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #6900F4;
+            white-space: nowrap;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 99px;
+            padding: 18px 44px;
+            font-size: 19px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-cta:hover {
+            background: #0000C4;
+            transform: translateY(-1px);
+        }
+
+        .hero-cta svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ── BAUSTEIN: kleine Zwischenüberschrift mit Trennlinie ── */
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--hint);
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-label svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* ── BAUSTEIN: Akkordeon (aufklappbare Box) ── */
+        .accordion {
+            margin-bottom: 12px;
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            background: #E8E2F5;
+            border: 1.5px solid #F5F5FF;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.18s;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            border-color: #8B36FC;
+            background: #FFFFFF;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-1px);
+        }
+
+        .accordion.open .accordion-header {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-color: #6900F4;
+            border-bottom-color: transparent;
+            background: #F2EEF9;
+        }
+
+        .accordion-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .accordion-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            background: #3D008D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .accordion-icon svg {
+            width: 30px;
+            height: 30px;
+            color: #FFE800;
+        }
+
+        .accordion-label {
+            font-size: clamp(19px, 1.6vw, 26px);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .accordion-sub {
+            font-size: clamp(14px, 1.1vw, 17px);
+            color: #4D00B4;
+            margin-top: 3px;
+        }
+
+        .accordion-arrow {
+            width: 30px;
+            height: 30px;
+            color: #8B36FC;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .accordion.open .accordion-arrow {
+            transform: rotate(180deg);
+            color: #FFBF00;
+        }
+
+        .accordion-body {
+            background: #6900F4;
+            border: 1.5px solid #7A1FFF;
+            border-top: none;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1);
+            visibility: hidden;
+        }
+
+        .accordion.open .accordion-body {
+            max-height: 2000px;
+            visibility: visible;
+        }
+
+        .accordion-inner {
+            padding: 1.5rem 1.5rem 1.75rem;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .accordion-inner p,
+        .accordion-inner .step-body p,
+        .accordion-inner .prompt-text {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .accordion-inner .section-label {
+            color: rgba(255, 255, 255, 0.92);
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .accordion-inner .section-label svg {
+            color: #FFE800;
+        }
+
+        /* ── BAUSTEIN: weiße Karte für Fließtext ── */
+        .card {
+            background: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 14px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: box-shadow 0.2s, transform 0.2s;
+            box-shadow: 0 2px 12px rgba(105, 0, 244, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--hint);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title svg {
+            width: 18px;
+            height: 18px;
+            color: inherit;
+        }
+
+        /* ── BAUSTEIN: nummerierte Schritt-Liste ── */
+        .steps {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-row {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .step-row:first-child {
+            padding-top: 0;
+        }
+
+        .step-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            font-style: italic;
+            color: #FFE800;
+            min-width: 34px;
+            line-height: 1.1;
+        }
+
+        .step-body strong {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 2px;
+        }
+
+        .step-body p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.65;
+        }
+
+        .step-body a {
+            color: #FFE800;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .step-row {
+            border-bottom-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ── BAUSTEIN: Text-Box mit Kopieren-Button ── */
+        .prompt-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 10px 10px 0;
+            padding: 1.1rem 1.25rem;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .prompt-label {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .prompt-hint {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 1);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .prompt-text {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--text);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            background: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 0.875rem 1rem;
+        }
+
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 99px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: #FFFFFF;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.18s;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .copy-btn.copied {
+            background: #FFFFFF;
+            color: #6900F4;
+            border-color: #FFFFFF;
+        }
+
+        .copy-btn svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        /* ── BAUSTEIN: Begriffs-Karten (Begriff + Erklärung + Beispiel) ── */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .vocab-card {
+            background: #F8F6FC;
+            border: 1.5px solid #D4C8ED;
+            border-top: 3px solid #6900F4;
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            transition: all 0.18s;
+        }
+
+        .vocab-card:hover {
+            background: #FFFFFF;
+            border-color: #8B36FC;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-1px);
+        }
+
+        .vocab-term {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .vocab-def {
+            font-size: 15px;
+            color: var(--dim);
+            line-height: 1.65;
+            margin-bottom: 9px;
+        }
+
+        .vocab-prompt {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0000F5;
+            background: rgba(68, 68, 252, 0.1);
+            border-radius: 5px;
+            padding: 5px 9px;
+            line-height: 1.5;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ── BAUSTEIN: Link-Karten (klickbar, öffnen externe Seite) ── */
+        .inspo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .inspo-card {
+            background: #F8F6FC;
+            border: 1.5px solid #D4C8ED;
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+            transition: all 0.18s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .inspo-card:hover {
+            background: #FFFFFF;
+            border-color: #8B36FC;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-1px);
+        }
+
+        .inspo-card-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .inspo-card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .inspo-card strong {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .inspo-card p {
+            font-size: 16px;
+            color: var(--dim);
+            line-height: 1.55;
+            margin-bottom: 5px;
+        }
+
+        .inspo-card span {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ── BAUSTEIN: Vergleichs-Karten mit Logo & Badge ── */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .tool-card {
+            background: #F8F6FC;
+            border: 1.5px solid #D4C8ED;
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+            transition: all 0.18s;
+        }
+
+        .tool-card:hover {
+            background: #FFFFFF;
+            border-color: #8B36FC;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-1px);
+        }
+
+        .tool-card.best {
+            border-color: #6900F4;
+            border-width: 1.5px;
+        }
+
+        .tool-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .tool-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            display: inline-block;
+            margin-bottom: 7px;
+        }
+
+        .badge-best {
+            background: var(--acc-light);
+            color: var(--ok-text);
+            border: 1px solid var(--acc-border);
+        }
+
+        .badge-adv {
+            background: var(--surface2);
+            color: var(--hint);
+        }
+
+        .tool-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .tool-desc {
+            font-size: 15px;
+            color: var(--dim);
+            line-height: 1.55;
+        }
+
+        /* ── BAUSTEIN: Info-Karten mit Pflicht/Empfohlen-Markierung ── */
+        .legal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .legal-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .legal-tag {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 99px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 7px;
+        }
+
+        .tag-must {
+            background: var(--err-bg);
+            color: var(--err-text);
+        }
+
+        .tag-nice {
+            background: var(--ok-bg);
+            color: var(--ok-text);
+        }
+
+        .legal-tag svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .legal-item strong {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .legal-item p {
+            font-size: 15px;
+            color: var(--dim);
+            line-height: 1.55;
+        }
+
+        /* ── BAUSTEIN: Klick-Anleitung (Schritt für Schritt durchklicken) ── */
+        .stepper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stepper-progress {
+            height: 5px;
+            background: var(--surface2);
+        }
+
+        .stepper-prog-bar {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.35s ease;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .stepper-counter {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--hint);
+            padding: 1.25rem 1.75rem 0;
+        }
+
+        .stepper-body {
+            padding: 1rem 1.75rem 1.25rem;
+            min-height: 220px;
+        }
+
+        .stepper-step-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(22px, 2vw, 32px);
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            line-height: 1.2;
+        }
+
+        .stepper-step-num {
+            background: var(--accent);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stepper-step-desc {
+            font-size: clamp(17px, 1.4vw, 22px);
+            color: var(--dim);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .stepper-tip {
+            background: var(--ok-bg);
+            border: 1px solid var(--acc-border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: clamp(15px, 1.15vw, 18px);
+            color: var(--ok-text);
+            line-height: 1.55;
+            font-weight: 700;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .stepper-tip svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .stepper-done {
+            text-align: center;
+            padding: 0.75rem 0 0.25rem;
+        }
+
+        .stepper-done-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--acc-light);
+            border: 2px solid var(--acc-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+        }
+
+        .stepper-done-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--accent);
+        }
+
+        .stepper-done h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .stepper-done p {
+            font-size: 18px;
+            color: var(--dim);
+            line-height: 1.6;
+        }
+
+        .stepper-done a {
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .stepper-nav {
+            display: flex;
+            gap: 12px;
+            padding: 0 1.75rem 1.5rem;
+        }
+
+        /* ── BAUSTEIN: Kleine Übersichts-Karten mit Preis & Link ── */
+        .alt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .alt-card {
+            background: #F8F6FC;
+            border: 1.5px solid #D4C8ED;
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+            transition: all 0.18s;
+        }
+
+        .alt-free {
+            border-top: 2px solid #6900F4;
+        }
+
+        .alt-paid {
+            border-top: 2px solid #8B36FC;
+        }
+
+        .alt-card:hover {
+            background: #FFFFFF;
+            border-color: #8B36FC;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-1px);
+        }
+
+        .alt-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin-bottom: 7px;
+        }
+
+        .alt-icon-wrap {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alt-icon-wrap svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .alt-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .alt-price {
+            font-size: 14px;
+            color: var(--hint);
+            margin-top: 1px;
+        }
+
+        .alt-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 99px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .alt-desc {
+            font-size: 15px;
+            color: var(--dim);
+            line-height: 1.55;
+            margin-bottom: 7px;
+        }
+
+        .alt-link {
+            font-size: 14px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* ── Eigener Mauszeiger (gelber Punkt) ──
+   ✏️ Willst du den normalen Mauszeiger zurück? Lösche die nächste Zeile
+      (* { cursor: none !important; }) und den Block "EIGENER MAUSZEIGER" im JavaScript. */
+        * {
+            cursor: none !important;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: #FFBF00;
+            border: none;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.15s ease, height 0.15s ease, opacity 0.2s, background 0.2s;
+            mix-blend-mode: normal;
+            box-shadow: 0 0 0 2px rgba(5, 5, 32, 0.25);
+        }
+
+        #cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            background: #FFBF00;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.06s ease;
+            opacity: 0;
+        }
+
+        body.cursor-hover #cursor-ring {
+            width: 30px;
+            height: 30px;
+            background: #FFBF00;
+            border: none;
+        }
+
+        body.cursor-hover #cursor-dot {
+            opacity: 0;
+        }
+
+        body.cursor-click #cursor-ring {
+            width: 12px;
+            height: 12px;
+            background: #FFBF00;
+        }
+
+        /* ── Animierter Partikel-Hintergrund der Startseite ── */
+        #hero-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            isolation: isolate;
+        }
+
+        .hero-slide {
+            overflow: hidden;
+        }
+
+        /* ── BAUSTEIN: Aufklappbare Karten (Klick zeigt Details) ── */
+        .next-steps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: start;
+            gap: 14px;
+        }
+
+        .next-step-card {
+            background: #F8F6FC;
+            border: 1.5px solid #D4C8ED;
+            border-radius: 14px;
+            padding: 1.4rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.18s;
+            text-align: left;
+            font-family:'DM Sans',sans-serif;
+        }
+
+        .next-step-card:hover {
+            background: #FFFFFF;
+            border-color: #8B36FC;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-1px);
+        }
+
+        .next-step-card.open {
+            background: #F2EEF9;
+            border-color: #6900F4;
+        }
+
+        .next-step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: #3D008D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .next-step-icon svg {
+            width: 26px;
+            height: 26px;
+            color: #FFE800;
+        }
+
+        .next-step-title {
+            font-size: clamp(18px, 1.45vw, 23px);
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .next-step-sub {
+            font-size: clamp(14px, 1.1vw, 17px);
+            color: var(--dim);
+            line-height: 1.45;
+        }
+
+        .next-step-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .next-step-card.open .next-step-detail {
+            max-height: 1000px;
+        }
+
+        .next-step-detail-inner {
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 14px;
+            font-size: clamp(15px, 1.2vw, 18px);
+            color: var(--dim);
+            line-height: 1.6;
+        }
+
+        .next-step-detail-inner a {
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .next-step-detail-inner strong {
+            color: var(--text);
+        }
+
+        /* ── BAUSTEIN: Kontakt-/Feedback-Boxen (dunkel) ── */
+        .contact-hero {
+            position: relative;
+            background: #3D008D;
+            border-radius: 16px;
+            padding: 2rem 2.5rem;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            border: 1.5px solid #6900F4;
+            transition: all 0.18s;
+        }
+
+        .contact-hero:hover {}
+
+        .contact-pulse-ring {
+            display: none;
+        }
+
+        .contact-hero-inner {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* QR-Codes stehen in beiden Kacheln unten auf gleicher Höhe */
+        .qr-slot {
+            margin-top: auto !important;
+            margin-bottom: 0 !important;
+            padding-top: 20px;
+            align-self: stretch;
+        }
+
+        .contact-overline {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+        }
+
+        .contact-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .contact-org {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .contact-email {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: #6900F4;
+            color: white;
+            border-radius: 99px;
+            padding: 10px 22px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.18s;
+            border: 1.5px solid #8B36FC;
+            cursor: pointer;
+        }
+
+        .contact-email:hover {
+            background: #4D00B4;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(105, 0, 244, 0.4);
+        }
+
+        #btn-feedback {
+            background: #4D00B4 !important;
+            border-color: #6900F4 !important;
+            color: white !important;
+        }
+
+        #btn-feedback:hover {
+            background: #3D008D !important;
+            border-color: #4D00B4 !important;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(105, 0, 244, 0.4);
+        }
+
+        .contact-email svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .contact-glow {
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(119, 16, 255, 0.25), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── Allgemeine Listen & Buttons ── */
+        ul.plain-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul.plain-list li {
+            font-size: 16px;
+            color: var(--dim);
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            line-height: 1.55;
+            display: flex;
+            gap: 9px;
+            align-items: flex-start;
+        }
+
+        ul.plain-list li:last-child {
+            border-bottom: none;
+        }
+
+        ul.plain-list li::before {
+            content: "→";
+            color: var(--accent);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        ul.plain-list li a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 16px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--hint);
+            min-width: 120px;
+            font-size: 13px;
+            padding-top: 2px;
+            letter-spacing: 0.04em;
+        }
+
+        .info-value {
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .info-value a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 99px;
+            border: 1.5px solid var(--border-d);
+            background: var(--surface);
+            color: var(--dim);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn.primary:hover:not(:disabled) {
+            background: #0000C4;
+        }
+
+        /* ── BAUSTEIN: Fließtext in einer Karte (<div class="card-text">) ── */
+        .card-text {
+            font-size: clamp(16px, 1.3vw, 21px);
+            color: var(--dim);
+            line-height: 1.6;
+        }
+
+        .card-text strong {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2em;
+            color: var(--text);
+        }
+
+        .card-text ul {
+            margin: 10px 0 0 1.2em;
+        }
+
+        .card-text li {
+            margin-bottom: 4px;
+        }
+
+        /* Hellgrauer Beispieltext – nur ein Platzhalter */
+        .placeholder {
+            color: #A3A3BD;
+            font-style: italic;
+        }
+
+        /* ── BAUSTEIN: Aufwand/Nutzen-Matrix (ohne Bild, nur Code) ──
+   Klick auf ein Feld deckt die Empfehlung auf. */
+        .matrix {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: 1fr auto;
+            gap: 10px 14px;
+            margin-top: 16px;
+        }
+
+        .matrix-axis-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(18px, 1.6vw, 26px);
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matrix-axis-label.y {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .matrix-axis-label.x {
+            grid-column: 2;
+        }
+
+        .matrix-plot {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 22px 22px 14px 14px;
+            border-left: 3px solid var(--text);
+            border-bottom: 3px solid var(--text);
+        }
+
+        /* Pfeilspitzen der Achsen */
+        .matrix-plot::before,
+        .matrix-plot::after {
+            content: '';
+            position: absolute;
+            border: 9px solid transparent;
+        }
+
+        .matrix-plot::before {
+            top: -12px;
+            left: -10.5px;
+            border-bottom: 14px solid var(--text);
+            border-top: none;
+        }
+
+        .matrix-plot::after {
+            right: -12px;
+            bottom: -10.5px;
+            border-left: 14px solid var(--text);
+            border-right: none;
+        }
+
+        .quadrant {
+            position: relative;
+            min-height: clamp(130px, 17vh, 210px);
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #F4F1FB;
+            border: 2px solid transparent;
+            text-align: left;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .quadrant.alt {
+            background: #EAE4F8;
+        }
+
+        .quadrant:hover {
+            border-color: #8B36FC;
+            background: #FFFFFF;
+            box-shadow: 0 4px 0 0 #6900F4;
+            transform: translateY(-2px);
+        }
+
+        .quadrant-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(17px, 1.45vw, 23px);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .quadrant-title.good {
+            color: #A16E00;
+        }
+
+        .quadrant-title.bad {
+            color: var(--err-text);
+        }
+
+        .quadrant-sub {
+            font-size: clamp(13px, 1vw, 16px);
+            color: var(--dim);
+            margin-top: 2px;
+        }
+
+        .quadrant-verdict {
+            position: absolute;
+            right: 16px;
+            bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: clamp(16px, 1.3vw, 21px);
+            font-weight: 700;
+            color: var(--text);
+            opacity: 0;
+            transform: scale(0.6);
+            transition: opacity 0.3s, transform 0.35s cubic-bezier(.3, 1.6, .5, 1);
+        }
+
+        .quadrant-verdict .emoji {
+            font-size: 1.8em;
+            line-height: 1;
+        }
+
+        .quadrant.revealed .quadrant-verdict {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .quadrant-hint {
+            position: absolute;
+            right: 16px;
+            bottom: 14px;
+            font-size: 13px;
+            color: var(--hint);
+            transition: opacity 0.2s;
+        }
+
+        .quadrant.revealed .quadrant-hint {
+            opacity: 0;
+        }
+
+        /* ── BAUSTEIN: Ablauf/Roadmap mit gezeichneten Symbolen (ohne Bild) ──
+   Die Schritte erscheinen nacheinander, sobald das Akkordeon geöffnet wird. */
+        .flow {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 6px;
+            margin-top: 18px;
+            padding: 8px 0 4px;
+        }
+
+        .flow-step {
+            flex: 0 1 auto;
+            min-width: 80px;
+            width: clamp(96px, 10vw, 150px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .flow-icon {
+            width: clamp(70px, 7vw, 108px);
+            height: clamp(70px, 7vw, 108px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .flow-step:hover .flow-icon {
+            transform: translateY(-4px) scale(1.06);
+        }
+
+        .flow-icon svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .flow-label {
+            font-size: clamp(14px, 1.15vw, 18px);
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.25;
+        }
+
+        .flow-arrow {
+            flex: 1 1 0;
+            min-width: 24px;
+            height: 3px;
+            margin-top: calc(clamp(70px, 7vw, 108px) / 2);
+            background: var(--text);
+            position: relative;
+        }
+
+        .flow-arrow::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 8px solid transparent;
+            border-left: 13px solid var(--text);
+            border-right: none;
+        }
+
+        /* Klebezettel "Use Case" */
+        /* Symbole als App-Icon-Kacheln. ✏️ Farbe einer Kachel: Klasse tile-idea / tile-openai / … unten ändern */
+        .flow-tile {
+            width: 88%;
+            height: 88%;
+            border-radius: 26%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            box-shadow: 0 10px 22px rgba(5, 5, 32, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .flow-tile svg {
+            width: 54%;
+            height: 54%;
+        }
+
+        .tile-idea {
+            background: linear-gradient(145deg, #FFD84D, #FFA800);
+            color: #3D2A00;
+        }
+
+        .tile-openai {
+            background: linear-gradient(145deg, #2A2A2A, #000000);
+        }
+
+        .tile-doc {
+            background: linear-gradient(145deg, #FF5A5A, #D11A1A);
+        }
+
+        .tile-anthropic {
+            background: #F0EEE6;
+            color: #191919;
+            box-shadow: 0 10px 22px rgba(5, 5, 32, 0.14), inset 0 0 0 1.5px #E2DED2;
+        }
+
+        .tile-proto {
+            background: linear-gradient(145deg, #8B36FC, #0000F5);
+        }
+
+        .flow-sub {
+            font-size: clamp(12px, 0.95vw, 15px);
+            font-weight: 500;
+            color: var(--hint);
+            margin-top: -8px;
+        }
+
+        .accordion.open .flow-step,
+        .accordion.open .flow-arrow {
+            animation: flow-in 0.45s cubic-bezier(.3, 1.4, .5, 1) both;
+            animation-delay: calc(var(--i) * 0.18s);
+        }
+
+        @keyframes flow-in {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.85);
+            }
+        }
+
+        /* ── Kleine Quellenangabe unter einem Text ── */
+        .source {
+            margin-top: 14px;
+            font-size: 13px;
+            font-style: italic;
+            color: var(--hint);
+        }
+
+        .next-step-detail-inner .source {
+            margin-top: 10px;
+        }
+
+        /* ── BAUSTEIN: Vergleich Privat vs. Büro (Klick auf Button zeigt Büro-Balken) ── */
+        .compare {
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 18px;
+        }
+
+        .cmp-row {
+            display: grid;
+            grid-template-columns: clamp(140px, 13vw, 210px) 1fr;
+            gap: 18px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cmp-task {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(17px, 1.45vw, 23px);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .cmp-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+            min-height: 32px;
+            font-size: clamp(14px, 1.1vw, 17px);
+            color: var(--dim);
+        }
+
+        .cmp-fill {
+            height: 22px;
+            width: var(--w);
+            min-width: 8px;
+            border-radius: 99px;
+            background: #16A34A;
+            flex-shrink: 0;
+            transition: width 1.1s cubic-bezier(.3, 0, .2, 1);
+        }
+
+        .cmp-line b {
+            font-size: clamp(16px, 1.3vw, 21px);
+            color: var(--ok-text);
+            white-space: nowrap;
+        }
+
+        .cmp-line.work {
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .cmp-line.work .cmp-fill {
+            width: 0;
+            background: #DC2626;
+        }
+
+        .cmp-line.work b {
+            color: var(--err-text);
+        }
+
+        .compare.show-work .cmp-line.work {
+            opacity: 1;
+        }
+
+        .compare.show-work .cmp-line.work .cmp-fill {
+            width: var(--w);
+        }
+
+        .compare-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .compare-btn {
+            flex: 0 0 auto;
+            padding: 12px 26px;
+            font-size: 17px;
+        }
+
+        .cmp-punch {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(18px, 1.6vw, 26px);
+            font-weight: 700;
+            color: #6900F4;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s 0.9s, transform 0.5s 0.9s;
+        }
+
+        .compare.show-work .cmp-punch {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ── BAUSTEIN: Zahlen-Kacheln (große Zahl, Klick zeigt Details) ── */
+        .stat-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(40px, 4vw, 64px);
+            font-weight: 700;
+            line-height: 1;
+            color: #6900F4;
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+
+        /* ── Hinweis-Kasten "Was hilft" in aufklappbaren Karten ── */
+        .fix-box {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: var(--ok-bg);
+            color: var(--ok-text);
+        }
+
+        .fix-box strong {
+            color: var(--ok-text) !important;
+        }
+
+        .next-step-title.quote {
+            font-style: italic;
+        }
+
+        /* ── Banner mit Kernaussage ── */
+        .key-banner {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 14px;
+            padding: 1.4rem 1.75rem;
+            border-radius: 14px;
+            background: #3D008D;
+            color: #FFFFFF;
+        }
+
+        .key-banner svg {
+            width: 44px;
+            height: 44px;
+            color: #FFE800;
+            flex-shrink: 0;
+        }
+
+        .key-banner strong {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(19px, 1.7vw, 27px);
+            margin-bottom: 4px;
+        }
+
+        .key-banner span {
+            font-size: clamp(15px, 1.2vw, 18px);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* ── Historie: Zeitleiste & Visualisierungen ── */
+        .stepper-timeline {
+            display: flex;
+            align-items: flex-start;
+            padding: 1.25rem 1.75rem 0;
+        }
+
+        .tl-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(14px, 1.15vw, 18px);
+            font-weight: 700;
+            color: var(--hint);
+            flex: 0 0 auto;
+        }
+
+        .tl-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--border-d);
+            transition: all 0.25s;
+        }
+
+        .tl-node.past .tl-dot {
+            background: #6900F4;
+        }
+
+        .tl-node.active {
+            color: #6900F4;
+        }
+
+        .tl-node.active .tl-dot {
+            background: var(--accent);
+            transform: scale(1.35);
+            box-shadow: 0 0 0 6px var(--acc-light);
+        }
+
+        .tl-line {
+            flex: 1;
+            height: 3px;
+            margin-top: 6.5px;
+            background: var(--border);
+        }
+
+        .tl-line.past {
+            background: #6900F4;
+        }
+
+        .stepper-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .stepper-visual {
+            min-height: 340px;
+            border-radius: 14px;
+            background: #F4F1FB;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 1.25rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .vis-caption {
+            font-size: clamp(14px, 1.1vw, 17px);
+            font-weight: 700;
+            color: var(--dim);
+            text-align: center;
+        }
+
+        .vis-pop {
+            animation: vis-pop 0.5s cubic-bezier(.3, 1.5, .5, 1) both;
+        }
+
+        @keyframes vis-pop {
+            from {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+        }
+
+        /* 1956: Großrechner */
+        .vis-computer {
+            width: min(100%, 300px);
+        }
+
+        .vis-computer .reel {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: reel-spin 2.4s linear infinite;
+        }
+
+        .vis-computer .reel.rev {
+            animation-direction: reverse;
+        }
+
+        .vis-computer .lamp {
+            animation: lamp-blink 1.4s steps(2, jump-none) infinite;
+        }
+
+        @keyframes reel-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes lamp-blink {
+            50% {
+                fill: #FFE800;
+            }
+        }
+
+        /* 1997: Schachbrett */
+        .vis-chess {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            width: min(100%, 240px);
+            aspect-ratio: 1;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(61, 0, 141, 0.2);
+        }
+
+        .vis-chess div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(18px, 1.8vw, 26px);
+            line-height: 1;
+            font-family: 'Segoe UI Symbol', 'DejaVu Sans', serif;
+            background: #EBEBFD;
+            color: #3D008D;
+        }
+
+        .vis-chess div.dark {
+            background: #8B6FD8;
+        }
+
+        .vis-chess .king-falls {
+            color: #FFFFFF;
+            text-shadow: 0 0 2px #050520, 0 0 2px #050520;
+            animation: king-fall 1s 1.2s cubic-bezier(.5, 0, .7, 1.4) both;
+        }
+
+        @keyframes king-fall {
+            to {
+                transform: rotate(90deg) translateX(18%);
+            }
+        }
+
+        .vis-score {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(20px, 1.8vw, 28px);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* 2016: Go-Brett */
+        .vis-go {
+            width: min(100%, 250px);
+        }
+
+        .vis-go .stone {
+            animation: vis-pop 0.4s cubic-bezier(.3, 1.5, .5, 1) both;
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+        .vis-go .move37-ring {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: ring-pulse 1.6s 1.6s ease-out infinite both;
+        }
+
+        @keyframes ring-pulse {
+            from {
+                opacity: 0.9;
+                transform: scale(0.6);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(2.2);
+            }
+        }
+
+        /* 2022: Wachstums-Balken */
+        .vis-growth {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .vis-growth-row {
+            display: grid;
+            grid-template-columns: 92px 1fr auto;
+            gap: 10px;
+            align-items: center;
+            font-size: clamp(13px, 1vw, 16px);
+            color: var(--dim);
+        }
+
+        .vis-growth-row .bar {
+            height: 16px;
+            border-radius: 99px;
+            background: var(--border-d);
+            width: var(--w);
+            min-width: 8px;
+            animation: bar-grow 1s cubic-bezier(.3, 0, .2, 1) both;
+            animation-delay: calc(var(--i) * 0.12s);
+        }
+
+        .vis-growth-row b {
+            white-space: nowrap;
+            color: var(--text);
+        }
+
+        .vis-growth-row.hot {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .vis-growth-row.hot .bar {
+            background: var(--accent);
+            box-shadow: 0 0 0 0 rgba(0, 0, 245, 0.5);
+            animation: bar-grow 1s both, bar-glow 1.4s 1.2s ease-out infinite;
+        }
+
+        .vis-growth-row.hot b {
+            color: var(--accent);
+            font-size: 1.25em;
+        }
+
+        @keyframes bar-grow {
+            from {
+                width: 0;
+                min-width: 0;
+            }
+        }
+
+        @keyframes bar-glow {
+            to {
+                box-shadow: 0 0 0 10px rgba(0, 0, 245, 0);
+            }
+        }
+
+        /* Heute: Buzzword-Wolke */
+        .buzz-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px 12px;
+        }
+
+        .buzz {
+            padding: 7px 15px;
+            border-radius: 99px;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(14px, 1.1vw, 17px);
+            font-weight: 700;
+            background: #FFFFFF;
+            color: #3D008D;
+            border: 2px solid #D4C8ED;
+            animation: buzz-pop 0.5s cubic-bezier(.3, 1.6, .5, 1) both, buzz-pulse 2.6s ease-in-out infinite;
+        }
+
+        .buzz.big {
+            font-size: clamp(18px, 1.6vw, 25px);
+            background: #6900F4;
+            color: #FFFFFF;
+            border-color: #6900F4;
+        }
+
+        .buzz.gold {
+            background: #FFE800;
+            border-color: #FFBF00;
+            color: #050520;
+        }
+
+        @keyframes buzz-pop {
+            from {
+                opacity: 0;
+                transform: scale(0.2);
+            }
+        }
+
+        @keyframes buzz-pulse {
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 6px 18px rgba(105, 0, 244, 0.25);
+            }
+        }
+
+        /* ── FINALE: Abschluss-Satz in Phase 5 (der krönende Abschluss) ──
+   Leuchtender, umlaufender Farbrahmen · Wörter fliegen beim Betreten der Folie ein ·
+   Lichtreflex · aufsteigende Funken · hüpfendes Fragezeichen mit Wellen.
+   ✏️ Farben des Rahmens: im conic-gradient von .finale ändern */
+        @property --finale-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .finale {
+            position: relative;
+            margin: 14px 0 4px;
+            padding: 3px;
+            border-radius: 24px;
+            background: conic-gradient(from var(--finale-angle), #6900F4, #0000F5, #FFBF00, #FFE800, #8B36FC, #6900F4);
+            animation: finale-spin 5s linear infinite, finale-breathe 3.2s ease-in-out infinite;
+        }
+
+        /* Weiches Leuchten des Rahmens nach außen */
+        .finale::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: inherit;
+            background: conic-gradient(from var(--finale-angle), #6900F4, #0000F5, #FFBF00, #FFE800, #8B36FC, #6900F4);
+            filter: blur(22px);
+            opacity: 0.55;
+            z-index: -1;
+            animation: finale-spin 5s linear infinite;
+        }
+
+        .finale-inner {
+            position: relative;
+            overflow: hidden;
+            border-radius: 21px;
+            padding: 16px 32px;
+            text-align: center;
+            background: radial-gradient(ellipse at 50% 140%, #7A1FFF 0%, #3D008D 55%, #1A0045 100%);
+        }
+
+        /* Lichtreflex, der über die Fläche gleitet */
+        .finale-inner::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            bottom: -20%;
+            left: -40%;
+            width: 30%;
+            background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+            transform: skewX(-20deg);
+            animation: finale-glare 5s ease-in-out 2s infinite;
+            pointer-events: none;
+        }
+
+        .finale-text {
+            position: relative;
+            z-index: 1;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(26px, 2.7vw, 44px);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+            text-shadow: 0 0 24px rgba(139, 54, 252, 0.9);
+        }
+
+        .finale-word {
+            display: inline-block;
+        }
+
+        /* Wörter fliegen nacheinander ein, sobald die Folie sichtbar wird */
+        .slide.active .finale-word,
+        .slide.active .finale-q {
+            animation: finale-word-in 0.7s cubic-bezier(.2, 1.4, .4, 1) both;
+            animation-delay: calc(0.45s + var(--i) * 0.1s);
+        }
+
+        .finale-q {
+            position: relative;
+            display: inline-block;
+            margin-left: 0.04em;
+            color: #FFBF00;
+            text-shadow: 0 0 18px rgba(255, 191, 0, 0.9), 0 0 40px rgba(255, 191, 0, 0.5);
+        }
+
+        .slide.active .finale-q {
+            animation: finale-word-in 0.7s cubic-bezier(.2, 1.4, .4, 1) both, finale-q-bounce 1.6s ease-in-out infinite;
+            animation-delay: calc(0.45s + var(--i) * 0.1s), calc(1.4s + var(--i) * 0.1s);
+        }
+
+        /* Wellen, die vom Fragezeichen ausgehen */
+        .finale-q i {
+            position: absolute;
+            left: 50%;
+            top: 55%;
+            width: 1.3em;
+            height: 1.3em;
+            border: 2px solid #FFBF00;
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.3);
+            animation: finale-q-ring 2.4s ease-out 1.6s infinite;
+            pointer-events: none;
+        }
+
+        .finale-q i + i {
+            animation-delay: 2.8s;
+        }
+
+        /* Aufsteigende goldene Funken */
+        .finale-sparks i {
+            position: absolute;
+            bottom: -8px;
+            left: var(--x);
+            width: var(--s);
+            height: var(--s);
+            border-radius: 50%;
+            background: #FFE800;
+            box-shadow: 0 0 8px 2px rgba(255, 232, 0, 0.7);
+            opacity: 0;
+            animation: finale-spark var(--t) linear var(--d) infinite;
+            pointer-events: none;
+        }
+
+        @keyframes finale-spin {
+            to {
+                --finale-angle: 360deg;
+            }
+        }
+
+        @keyframes finale-breathe {
+            50% {
+                transform: scale(1.015);
+                box-shadow: 0 14px 50px rgba(105, 0, 244, 0.45);
+            }
+        }
+
+        @keyframes finale-glare {
+
+            0%,
+            60% {
+                left: -40%;
+            }
+
+            100% {
+                left: 130%;
+            }
+        }
+
+        @keyframes finale-word-in {
+            from {
+                opacity: 0;
+                transform: translateY(0.7em) scale(0.7);
+                filter: blur(8px);
+            }
+        }
+
+        @keyframes finale-q-bounce {
+            50% {
+                transform: translateY(-0.12em) scale(1.12);
+            }
+        }
+
+        @keyframes finale-q-ring {
+            0% {
+                opacity: 0.9;
+                transform: translate(-50%, -50%) scale(0.3);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(2.6);
+            }
+        }
+
+        @keyframes finale-spark {
+            0% {
+                opacity: 0;
+                transform: translateY(0);
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-150px);
+            }
+        }
+
+        /* Wer im System "weniger Bewegung" eingestellt hat, sieht das Finale ruhig */
+        @media (prefers-reduced-motion: reduce) {
+
+            .finale,
+            .finale *,
+            .finale::before,
+            .finale-inner::after {
+                animation: none !important;
+            }
+        }
+
+        /* ── Hype: OpenAI-Logo ── */
+        .hype-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            padding: 2.5rem 1.75rem;
+        }
+
+        .openai-logo {
+            width: clamp(120px, 12vw, 190px);
+            color: #050520;
+            animation: openai-breathe 4s ease-in-out infinite;
+        }
+
+        .openai-logo svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .hype-word {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(30px, 3vw, 46px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #050520;
+        }
+
+        @keyframes openai-breathe {
+            50% {
+                transform: scale(1.06) rotate(8deg);
+            }
+        }
+
+        /* Handy-Ansicht: Unter 700px Breite wird die linke Spalte ausgeblendet und alle Raster einspaltig */
+        @media (max-width:700px) {
+            .slide-left {
+                display: none;
+            }
+
+            .slide-right {
+                padding: 1.5rem 1.25rem 2rem;
+            }
+
+            #dot-nav {
+                display: none;
+            }
+
+            .tools-grid,
+            .legal-grid,
+            .inspo-grid,
+            .alt-grid,
+            .vocab-grid,
+            .next-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .stepper-grid,
+            .cmp-row {
+                grid-template-columns: 1fr;
+            }
+
+            .flow {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .flow-arrow {
+                flex: 0 0 auto;
+                width: 3px;
+                height: 32px;
+                margin: 0;
+            }
+
+            .flow-arrow::after {
+                right: auto;
+                top: auto;
+                left: 50%;
+                bottom: -2px;
+                transform: translateX(-50%);
+                border: 8px solid transparent;
+                border-top: 13px solid var(--text);
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Fortschrittsbalken ganz oben – füllt sich automatisch, nichts anpassen -->
+    <div id="progress-track">
+        <div id="progress-fill"></div>
+    </div>
+
+    <!-- ═══════════════ KOPFLEISTE OBEN ═══════════════ -->
+    <div id="topbar">
+
+        <!-- ✏️ MARKENNAME LINKS OBEN (Klick darauf führt zurück zur Startseite)
+       Teil 1 = fette Schrift, Teil 2 = kursiv in Lila, der Punkt am Ende ist gelb -->
+        <a class="brand" onclick="navigate(-currentSlide)" style="cursor:pointer; text-decoration:none;">
+            <span class="brand-ki">Digitalisierung in der </span> <em>Verwaltung<span class="dot-gold">.</span></em>
+        </a>
+
+        <!-- ✏️ LOGO RECHTS OBEN
+       1. Bei href="#" den Link zu deiner Webseite eintragen (z.B. https://www.deine-seite.de)
+       2. Das Platzhalter-Logo (<svg>…</svg>) ersetzen durch dein eigenes Logo, z.B.:
+          <img src="logo.png" alt="[Name deines Unternehmens]" style="height:28px;width:auto;">
+          (Die Datei logo.png muss im selben Ordner liegen wie diese Datei.) -->
+        <div id="phase-counter" style="display:flex;align-items:center;">
+            <a href="https://www.dasu.digital/" target="_blank" rel="noopener"
+                style="display:flex;align-items:center;text-decoration:none;">
+                <svg data-name="DASU Logo" xmlns="http://www.w3.org/2000/svg" width="220.581" height="52.823"
+                    viewBox="0 0 220.581 52.823" style="height:28px;width:auto;">
+                    <path data-name="Path 5644"
+                        d="M74.782,37.226,56.019,29.491,37.261,37.226,29.492,55.9,37.261,74.58l18.76,7.734,18.763-7.732L82.557,55.9Zm-.034,37.319H37.3V37.262H74.748Zm53.209-36.418a18.934,18.934,0,0,1,6.583,1.122,14.3,14.3,0,0,1,5.278,3.366,15.531,15.531,0,0,1,3.483,5.609,22.608,22.608,0,0,1,1.256,7.906,25.108,25.108,0,0,1-1.025,7.343,16.149,16.149,0,0,1-3.1,5.815,14.511,14.511,0,0,1-5.173,3.85,17.569,17.569,0,0,1-7.3,1.4h-15.78V38.127Zm-.564,29.681a10.381,10.381,0,0,0,3.381-.56,7.445,7.445,0,0,0,2.92-1.861,9.358,9.358,0,0,0,2.049-3.392,14.861,14.861,0,0,0,.768-5.1,21.119,21.119,0,0,0-.538-4.971,9.9,9.9,0,0,0-1.767-3.8,7.847,7.847,0,0,0-3.254-2.423,13.042,13.042,0,0,0-4.995-.841h-5.738V67.808Zm39.934-29.681,13.679,36.414h-8.35l-2.767-8.11H156.211l-2.87,8.11h-8.095l13.833-36.414Zm.461,22.338L163.178,47.1h-.1l-4.765,13.363Zm22.736,5.1a5.792,5.792,0,0,0,1.768,2.066,7.653,7.653,0,0,0,2.588,1.173,12.312,12.312,0,0,0,3.073.381,16.073,16.073,0,0,0,2.305-.177,8.081,8.081,0,0,0,2.305-.689,5.025,5.025,0,0,0,1.793-1.4,3.51,3.51,0,0,0,.717-2.27,3.187,3.187,0,0,0-.947-2.4,7.525,7.525,0,0,0-2.485-1.53,24.909,24.909,0,0,0-3.483-1.071q-1.948-.459-3.946-1.02a35.143,35.143,0,0,1-4-1.249,13.719,13.719,0,0,1-3.484-1.913,9.017,9.017,0,0,1-2.484-2.933,8.857,8.857,0,0,1-.948-4.258,9.5,9.5,0,0,1,1.2-4.871,10.863,10.863,0,0,1,3.15-3.442,13.749,13.749,0,0,1,4.406-2.04,18.828,18.828,0,0,1,4.918-.663,23.368,23.368,0,0,1,5.507.637,13.8,13.8,0,0,1,4.688,2.066,10.482,10.482,0,0,1,3.254,3.646,11.158,11.158,0,0,1,1.2,5.381h-7.787a6.431,6.431,0,0,0-.691-2.7,4.515,4.515,0,0,0-1.563-1.683,6.622,6.622,0,0,0-2.228-.867,13.785,13.785,0,0,0-2.741-.255,9.607,9.607,0,0,0-1.947.2,5.224,5.224,0,0,0-1.767.715,4.418,4.418,0,0,0-1.307,1.275,3.4,3.4,0,0,0-.512,1.938,3.255,3.255,0,0,0,.41,1.733,3.645,3.645,0,0,0,1.614,1.225,20.648,20.648,0,0,0,3.33,1.122q2.125.561,5.558,1.428,1.023.2,2.844.739a13.7,13.7,0,0,1,3.611,1.709,10.9,10.9,0,0,1,3.1,3.136,8.89,8.89,0,0,1,1.307,5.024,11.1,11.1,0,0,1-.973,4.641,10.088,10.088,0,0,1-2.894,3.7,13.932,13.932,0,0,1-4.766,2.423,22.647,22.647,0,0,1-6.582.867,23.208,23.208,0,0,1-5.867-.74,14.765,14.765,0,0,1-5.021-2.32,11.463,11.463,0,0,1-3.459-4.03,11.962,11.962,0,0,1-1.229-5.813h7.787A6.663,6.663,0,0,0,190.525,65.565Zm59.548,8.976h-7.989V69.429h-.143a11.136,11.136,0,0,1-4.458,4.437,12.152,12.152,0,0,1-6.026,1.669q-7.275,0-10.52-3.586t-3.246-10.827V37.834h8.131V60.341q0,4.829,1.855,6.816a6.766,6.766,0,0,0,5.206,1.987,10.292,10.292,0,0,0,4.279-.78,7.548,7.548,0,0,0,2.782-2.1,8.021,8.021,0,0,0,1.534-3.159,16.366,16.366,0,0,0,.463-3.976v-21.3h8.132Z"
+                        transform="translate(-29.492 -29.491)" fill="#0000F5" />
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Punkte-Navigation rechts – wird automatisch aus den Phasen erzeugt, nichts anpassen -->
+    <nav id="dot-nav" aria-label="Phasen-Navigation"></nav>
+
+    <!-- Hier werden alle Phasen automatisch eingefügt, nichts anpassen -->
+    <div id="slide-viewport"></div>
+
+    <!-- ═══════════════ NAVIGATION UNTEN ═══════════════ -->
+    <div id="bottom-nav">
+        <div class="nav-arrows">
+            <!-- ✏️ FEEDBACK-BUTTON (erscheint nur auf der letzten Phase)
+         Bei href="#" den Link zu deinem Umfrage-Formular eintragen (z.B. Microsoft Forms, Google Forms).
+         Brauchst du keinen Feedback-Button? Diese Zeile einfach löschen. -->
+            <!-- ✏️ Beschriftung der Buttons: "↑" und "Weiter ↓" – Text zwischen > und < ändern -->
+            <button class="nav-btn" id="btn-prev" onclick="navigate(-1)" aria-label="Zurück">↑</button>
+            <button class="nav-btn primary" id="btn-next" onclick="navigate(1)" aria-label="Weiter">Weiter ↓</button>
+        </div>
+    </div>
+
+    <!-- Große Zahl beim Phasenwechsel – nichts anpassen -->
+    <div id="transition-overlay">
+        <div class="transition-num" id="transition-num"></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ICONS
+        // Diese Symbole kannst du in den Bausteinen mit ihrem Namen verwenden,
+        // z.B. 'book', 'rocket', 'mail' (siehe Liste unten).
+        // ✏️ Eigenes Icon? Neue Zeile hinzufügen: meinIcon: `<svg ...>...</svg>`,
+        //    Kostenlose Icons gibt es z.B. auf lucide.dev oder hugeicons.com
+        // ═══════════════════════════════════════════════════════════════════════════
+        const IC = {
+            chevronDown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8.5L12 15l6.5-6.5"/></svg>`,
+            eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.544 11.045C21.848 11.4 22 11.577 22 12c0 .423-.152.6-.456.955C20.094 14.652 16.443 18.5 12 18.5c-4.443 0-8.094-3.848-9.544-5.545C2.152 12.6 2 12.423 2 12c0-.423.152-.6.456-.955C3.906 9.348 7.557 5.5 12 5.5c4.443 0 8.094 3.848 9.544 5.545z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+            scale: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M6 9l-3 6h6L6 9zM18 9l-3 6h6l-3-6z"/></svg>`,
+            cpu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M6 10H2M6 14H2M18 10h4M18 14h4M10 6V2M14 6V2M10 22v-4M14 22v-4"/></svg>`,
+            rocket: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C12 2 7 5 7 12L5 15l2 1-1 3 3.5-1 .5 2.5L12 19l2 1.5.5-2.5L18 19l-1-3 2-1-2-3c0-7-5-10-5-10z"/><path d="M10 14a2 2 0 104 0 2 2 0 00-4 0"/></svg>`,
+            copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>`,
+            check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 7"/></svg>`,
+            alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 20h20L12 2z"/><path d="M12 9v5M12 17.5v.5"/></svg>`,
+            link: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5l5-5M8.5 11.5L7 13a4.243 4.243 0 006 6l1.5-1.5M13 9l1.5-1.5a4.243 4.243 0 016 6L19 15"/></svg>`,
+            globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c-3 3-4 6-4 10s1 7 4 10M12 2c3 3 4 6 4 10s-1 7-4 10"/></svg>`,
+            search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>`,
+            zap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2L4 14h7.5L10 22l10-12h-7.5L14 2z"/></svg>`,
+            image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M3 16l5-5 4 4 2-2 4 4"/></svg>`,
+            mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>`,
+            arrowRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M13 6l6 6-6 6"/></svg>`,
+            palette: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.8-.5-1.1 0-1.1.9-2 2-2h2.4c3.1 0 5.6-2.5 5.6-5.6C22 6.1 17.5 2 12 2z"/><circle cx="7" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="7.5" r="1" fill="currentColor"/><circle cx="14" cy="7.5" r="1" fill="currentColor"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>`,
+            type: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6V5h16v1M9 5v14M15 5v14M7 19h4M13 19h4"/></svg>`,
+            grid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`,
+            book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a2 2 0 012-2h12a2 2 0 012 2v16l-7-3-7 3V4z"/><path d="M9 7h6M9 11h4"/></svg>`,
+            shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V6l-8-4z"/><path d="M9 12l2 2 4-4"/></svg>`,
+            clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
+            users: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0112 0v1M16 3.5a4 4 0 010 9M22 21v-1a6 6 0 00-4-5.6"/></svg>`,
+            lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="11" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`,
+            layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5M2 17l10 5 10-5"/></svg>`,
+            coins: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="6" rx="7" ry="3"/><path d="M2 6v4c0 1.7 3.1 3 7 3s7-1.3 7-3V6M2 10v4c0 1.7 3.1 3 7 3 1 0 2-.1 2.8-.3"/><circle cx="17" cy="17" r="5"/></svg>`,
+            lightbulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0012 2z"/></svg>`,
+            fileText: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>`,
+            appWindow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3"/><path d="M2 8h20"/><circle cx="5.5" cy="5.5" r=".6" fill="currentColor"/><circle cx="8" cy="5.5" r=".6" fill="currentColor"/><path d="M7 17v-3M11 17v-6M15 17v-4M19 17v-7" stroke-width="2.4"/></svg>`,
+            // Firmen-Logos (ausgefüllt)
+            openai: `<svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="OpenAI"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></svg>`,
+            anthropic: `<svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Anthropic"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>`,
+            help: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3M12 17h.01"/></svg>`,
+        };
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // HILFSFUNKTION FÜR AKKORDEONS (aufklappbare Boxen) – nichts anpassen
+        // So benutzt du sie im Inhalt:
+        //   ${acc('eindeutige-id', 'iconName', 'Titel', 'Untertitel', `INHALT`)}
+        //   - eindeutige-id: frei wählbar, darf aber nur EINMAL auf der Seite vorkommen
+        //   - iconName:      ein Name aus der Icon-Liste oben (z.B. 'book')
+        //   - Titel/Untertitel: Text, der auf der geschlossenen Box steht
+        //   - INHALT:        das, was beim Aufklappen erscheint (HTML)
+        // ═══════════════════════════════════════════════════════════════════════════
+        function acc(id, iconKey, label, sub, innerHtml) {
+            return `<div class="accordion" id="acc-${id}">
+    <div class="accordion-header" onclick="toggleAcc('${id}')">
+      <div class="accordion-left">
+        <div class="accordion-icon">${IC[iconKey]}</div>
+        <div><div class="accordion-label">${label}</div><div class="accordion-sub">${sub}</div></div>
+      </div>
+      <div class="accordion-arrow">${IC.chevronDown}</div>
+    </div>
+    <div class="accordion-body"><div class="accordion-inner">${innerHtml}</div></div>
+  </div>`;
+        }
+        function toggleAcc(id) {
+            const el = document.getElementById('acc-' + id);
+            if (el.classList.toggle('open')) countUp(el);
+        }
+
+        // Zahlen wie <span class="count" data-to="53">53</span> zählen beim Öffnen von 0 hoch
+        function countUp(root) {
+            root.querySelectorAll('.count').forEach(el => {
+                const to = parseFloat(el.dataset.to), dec = +(el.dataset.dec || 0), start = performance.now();
+                const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits: dec, maximumFractionDigits: dec});
+                (function step(now) {
+                    const t = Math.min(1, Math.max(0, (now - start) / 1400));
+                    el.textContent = fmt(to * (1 - Math.pow(1 - t, 3)));
+                    if (t < 1) requestAnimationFrame(step);
+                })(start);
+            });
+        }
+        function toggleNextStep(el) {el.classList.toggle('open');}
+
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════
+        //
+        //   ✏️✏️✏️  INHALT DER PHASEN  ✏️✏️✏️
+        //
+        //   Jede Phase ist ein Block in geschweiften Klammern { ... },
+        //   getrennt durch ein Komma.
+        //
+        //   • Neue Phase hinzufügen: einen kompletten Block { ... }, kopieren und
+        //     an der gewünschten Stelle einfügen.
+        //   • Phase löschen: den kompletten Block { ... }, entfernen.
+        //   • Die Reihenfolge hier = Reihenfolge auf der Seite.
+        //
+        //   Jede Phase hat:
+        //     label   → Kurzname (Punkte-Navigation rechts & Zeitleiste auf der Startseite)
+        //     eyebrow → kleine Überzeile in der linken farbigen Spalte
+        //     title   → große Überschrift in der linken farbigen Spalte
+        //     intro   → kurzer Einleitungstext unter der Überschrift
+        //     render  → der Inhalt der rechten Seite (zwischen den Backticks ` `)
+        //
+        //   ⚠️ WICHTIG beim Schreiben von Text:
+        //     - Text zwischen "Anführungszeichen" darf selbst keine " enthalten
+        //       → stattdessen „ und " oder ' verwenden.
+        //     - Im render-Bereich (zwischen den ` `) keine ` verwenden.
+        //
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════
+        const phases = [
+
+            // ─────────────────────────────────────────────────────────────────────────
+            // PHASE 0 — STARTSEITE (Hero)
+            // Die erste Seite, die Besucher sehen. Muss immer an erster Stelle stehen.
+            // ─────────────────────────────────────────────────────────────────────────
+            {
+                isHero: true,
+                label: "Start",                                  // ✏️ Name im Punkte-Menü rechts
+                titleLine1: "Digitalisierung in der ",              // ✏️ große fette Zeile
+                titleLine2: "Verwaltung",                         // ✏️ kursive lila Zeile (der gelbe Punkt kommt automatisch dahinter)
+                subtitle: "Fachvortrag Transferzentrum für Digitalisierung, Analytics & Data Science Ulm", // ✏️
+                buttonText: "Los geht's",                      // ✏️ Text auf dem großen Start-Button
+            },
+
+            // ─────────────────────────────────────────────────────────────────────────
+            // PHASE 1 — Beispiel-Bausteine: Text-Karte, Link-Karten, Begriffs-Karten
+            // ─────────────────────────────────────────────────────────────────────────
+            {
+                label: "Motivation",                 // ✏️ Kurzname der Phase
+                eyebrow: "Phase 1",                    // ✏️ kleine Überzeile links
+                title: "Warum Digitalisierung",    // ✏️ große Überschrift links
+                intro: "Digitalisierung soll Freiräume für das Wesentliche schaffen: Weniger sinnloses Papier, schnellere Abläufe und mehr Zeit für die Menschen, um die es wirklich geht.", // ✏️ Einleitung links
+                render: () => `
+
+        <!-- ▼ BAUSTEIN: AKKORDEON MIT BEGRIFFS-KARTEN ▼
+           Jede Zeile = eine Karte: [ Begriff, Erklärung, Beispiel ] -->
+             ${acc('p1-begriffe', 'grid', 'Digitalisierung', 'Eine mögliche Definition', `
+            <div class="card">
+                <div class="card-text">
+                <strong>Digitalisierung</strong><br>
+                Digitalisierung bezeichnet den Einsatz <strong>digitaler Technologien</strong>, um bestehende Prozesse, Produkte und Dienstleistungen zu verbessern, zu automatisieren oder völlig neu zu gestalten.
+                <br><br>
+                Schlüsseltechnologie: <strong>Künstliche Intelligenz</strong>
+                </div>
+                <div class="source">Quelle: ChatGPT (2026)</div>
+            </div>
+      `)}
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+
+      <!-- ▼ BAUSTEIN: VERGLEICH PRIVAT vs. BÜRO + ZAHLEN-KACHELN ▼ -->
+      ${acc('p1-erklaerung', 'book', 'Warum brauchen wir Digitalisierung?', 'Privat sind wir längst digital – im Job oft noch nicht', `
+
+        <div class="section-label">${IC.zap} Privat vs. im Büro</div>
+
+        <!-- ✏️ VERGLEICH: Jede Zeile = [ Aufgabe, privat: Text, Zeit, Balkenlänge, Büro: Text, Zeit, Balkenlänge ]
+             Der Button blendet die Büro-Balken ein. -->
+        <div class="compare">
+          ${[
+            ['Dokument finden', 'Suchleiste am Handy', '5 Sek.', '3%', 'Ordner & Laufwerke durchsuchen', '20 Min.', '26%'],
+            ['Unterschreiben', 'Freigabe per Fingerabdruck', '3 Sek.', '2%', 'Drucken, unterschreiben, scannen', '15 Min.', '22%'],
+            ['Termin finden', 'Arzttermin online buchen', '1 Min.', '5%', 'E-Mail-Pingpong mit fünf Leuten', '2 Tage', '38%'],
+            ['Urlaub', 'Reise in der App buchen', '5 Min.', '7%', 'Urlaubsantrag auf Papier', '3 Tage', '46%'],
+          ].map(([task, priv, privTime, privW, work, workTime, workW]) => `
+            <div class="cmp-row">
+              <div class="cmp-task">${task}</div>
+              <div>
+                <div class="cmp-line"><div class="cmp-fill" style="--w:${privW}"></div><b>📱 ${privTime}</b> ${priv}</div>
+                <div class="cmp-line work"><div class="cmp-fill" style="--w:${workW}"></div><b>🗂️ ${workTime}</b> ${work}</div>
+              </div>
+            </div>`).join('')}
+          <div class="compare-foot">
+            <button class="btn primary compare-btn" onclick="this.closest('.compare').classList.toggle('show-work')">Und im Büro? →</button>
+            <div class="cmp-punch">Den Urlaub buchen: 5 Minuten. Ihn beantragen: 3 Tage.</div>
+          </div>
+          <div class="source">Typische Alltagsbeispiele – Balken nicht maßstabsgetreu.</div>
+        </div>
+
+        <div class="section-label">${IC.search} Zahlen, die überzeugen</div>
+
+        <!-- ✏️ ZAHLEN-KACHELN: Jede Zeile = [ große Zahl, Titel, Untertitel, Details (beim Klick), Quelle ]
+             <span class="count" data-to="19">19</span> zählt beim Öffnen hoch (data-dec = Nachkommastellen). -->
+        <div class="next-steps">
+          ${[
+            ['<span class="count" data-to="19">19</span> %', 'Suchen statt arbeiten', 'der Arbeitszeit gehen fürs Suchen und Zusammentragen von Informationen drauf', 'Das ist fast <strong>ein ganzer Tag pro Woche</strong> – für Ordner, Laufwerke, Postfächer und „Weißt du, wo …?“. Digital ist jedes Dokument in Sekunden gefunden.', 'McKinsey Global Institute (2012)'],
+            ['<span class="count" data-to="1.39" data-dec="2">1,39</span> Mio.', 'Die Rentenwelle rollt', 'Beschäftigte im öffentlichen Dienst gehen in den nächsten 10 Jahren in Rente', 'Das sind <strong>27 Prozent</strong> – und schon heute fehlen rund 631.000 Beschäftigte. Mit Neueinstellungen allein ist diese Lücke nicht zu schließen.<br><br><strong>Deshalb:</strong> Routinearbeit muss wegfallen, damit Zeit für die Menschen bleibt.', 'dbb beamtenbund und tarifunion'],
+            ['<span class="count" data-to="53">53</span> Mio.', 'Blatt Papier', 'verbrauchten Bundesregierung und Bundesbehörden allein im Jahr 2022', '<strong>Bildhaft:</strong> Damit ließe sich das gesamte Stadtgebiet von Offenbach am Main bedecken – und für die Herstellung wurden über 6.000 Bäume gefällt.', ''],
+            ['2029', 'Digital wird Pflicht', 'Ab dann gibt es einen Rechtsanspruch auf digitale Verwaltungsleistungen', 'Das OZG 2.0 gibt Bürgern ab 2029 ein Recht auf digitalen Zugang zu Bundesleistungen. Unternehmensleistungen sollen spätestens 2030 nur noch elektronisch angeboten werden, und das Schriftformerfordernis fällt weg.<br><br><strong>Folge:</strong> Die Erwartung wird bis in jede Organisation durchschlagen.', 'Onlinezugangsgesetz (OZG 2.0)'],
+          ].map(([num, title, sub, detail, source]) => `
+            <div class="next-step-card" onclick="toggleNextStep(this)">
+              <div class="stat-number">${num}</div>
+              <div class="next-step-title">${title}</div>
+              <div class="next-step-sub">${sub}</div>
+              <div class="next-step-detail">
+                <div class="next-step-detail-inner">${detail}${source ? `<div class="source">Quelle: ${source}</div>` : ''}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+
+        <!-- ✏️ KERNAUSSAGE am Ende -->
+        <div class="key-banner">
+          ${IC.cpu}
+          <div>
+            <strong>Digitalisierung ist die Eintrittskarte für KI.</strong>
+            <span>Nur was digital vorliegt, kann KI lesen, sortieren, zusammenfassen und entwerfen.</span>
+          </div>
+        </div>
+      `)}
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+
+      <!-- ▼ BAUSTEIN: ROADBLOCKER ALS ZITAT-KACHELN ▼
+           ✏️ Jede Zeile = [ Icon, typischer Satz, Roadblocker, So sieht's aus, Was hilft ] -->
+             ${acc('p1-Unternehmen', 'grid', 'Unternehmen', 'Die 6 typischen Roadblocker – kommt Ihnen das bekannt vor?', `
+        <div class="next-steps">
+          ${[
+            [IC.users, '„Das haben wir schon immer so gemacht.“', 'Gewohnheit & Angst vor Veränderung', 'Neue Abläufe fühlen sich am Anfang langsamer an als die alten. Wer nicht mitgenommen wird, bremst – oft unbewusst.', 'Betroffene früh einbinden, Digital-Lotsen im Team benennen und erste Erfolge sichtbar feiern.'],
+            [IC.clock, '„Dafür haben wir gerade keine Zeit.“', 'Das Tagesgeschäft frisst alles', 'Wer ohnehin unterbesetzt ist, erlebt Digitalisierung als Zusatzaufgabe statt als Entlastung. So bleibt es beim Provisorium.', 'Mit dem Ablauf starten, der am meisten nervt – und dafür feste Zeit im Kalender blocken.'],
+            [IC.lock, '„Dürfen wir das überhaupt?“', 'Unsicherheit bei Datenschutz & Recht', 'DSGVO, Schriftform, Aufbewahrungspflichten: Im Zweifel bleibt man lieber beim Papier.', 'Datenschutz von Anfang an mit ins Boot holen und auf geprüfte Werkzeuge setzen.'],
+            [IC.layers, '„Vorne online, hinten ausgedruckt.“', 'Halbe Digitalisierung & Insellösungen', 'Das Formular ist digital, die Bearbeitung nicht. 2024 war fehlende Durchgängigkeit mit <strong>57 Prozent</strong> die größte Hürde für Nutzung und Zufriedenheit.', 'Den ganzen Prozess von Anfang bis Ende betrachten – nicht nur das Formular.'],
+            [IC.help, '„Wer kennt sich damit eigentlich aus?“', 'Fehlendes Know-how', 'Digitale Kompetenzen sind ungleich verteilt, IT-Fachkräfte rar. Ein, zwei Menschen tragen alles – bis sie im Urlaub sind.', 'Kurze Schulungen im Arbeitsalltag, Wissen teilen und externe Partner wie die DASU nutzen.'],
+            [IC.coins, '„Was kostet das – und was bringt’s?“', 'Unklarer Nutzen, knappes Budget', 'Ohne greifbaren Nutzen gibt es kein Budget. Ohne Budget kein Projekt. Ohne Projekt kein Nutzen.', 'Mit Quick Wins starten (siehe Aufwand/Nutzen-Matrix in Phase 4) und den Erfolg messbar machen.'],
+          ].map(([icon, quote, blocker, detail, fix]) => `
+            <div class="next-step-card" onclick="toggleNextStep(this)">
+              <div class="next-step-icon">${icon}</div>
+              <div class="next-step-title quote">${quote}</div>
+              <div class="next-step-sub">${blocker}</div>
+              <div class="next-step-detail">
+                <div class="next-step-detail-inner">${detail}<div class="fix-box"><strong>Was hilft:</strong> ${fix}</div></div>
+              </div>
+            </div>`).join('')}
+        </div>
+      `)}
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+
+    `
+            },
+
+            // ─────────────────────────────────────────────────────────────────────────
+            // PHASE 2 — Beispiel-Bausteine: Info-Karten, Kopier-Text
+            // ─────────────────────────────────────────────────────────────────────────
+            {
+                label: "Historie",
+                eyebrow: "Phase 2",
+                title: "Historie der KI",
+                intro: "Von den ersten Ideen in den 1950ern bis zum heutigen Hype: KI hat einen langen Weg hinter sich.",
+                render: () => `
+
+      <!-- ▼ BAUSTEIN: KLICK-ANLEITUNG ▼
+           Die Schritte selbst stehen NICHT hier, sondern weiter unten im Abschnitt
+           "SCHRITTE DER KLICK-ANLEITUNG". Hier nur Titel & Untertitel der Box ändern.
+           ⚠️ Diesen Baustein nur EINMAL auf der ganzen Seite verwenden. -->
+      ${acc('p2-historie', 'rocket', 'Historie', 'KI gibt es schon eine ganze Weile', `
+        <div class="stepper" id="ghStepper">
+          <div class="stepper-progress"><div class="stepper-prog-bar" id="stepperBar"></div></div>
+          <div class="stepper-timeline" id="stepperTimeline"></div>
+          <div class="stepper-body" id="stepperBody"></div>
+          <div class="stepper-nav">
+            <button class="btn" id="stepperBack" onclick="stepperGo(-1)">← Zurück</button>
+            <button class="btn primary" id="stepperNext" onclick="stepperGo(1)">Weiter →</button>
+          </div>
+        </div>
+      `)}
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+
+      <!-- ▼ BAUSTEIN: Karte mit fetter Überschrift und Zwischenüberschrift ▼-->
+        ${acc('p2-hype', 'book', 'Hype', 'ChatGPT, Medien & Massennutzung', `
+        <div class="card hype-card">
+          <div class="openai-logo">${IC.openai}</div>
+          <div class="hype-word">OpenAI</div>
+        </div>
+        `)}
+
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+
+    `
+            },
+
+            // ─────────────────────────────────────────────────────────────────────────
+            // PHASE 3 — Beispiel-Bausteine: Vergleichs-Karten, nummerierte Schritte
+            // ─────────────────────────────────────────────────────────────────────────
+            {
+                label: "Praxis",
+                eyebrow: "Phase 3",
+                title: "Was kann man damit machen",
+                intro: "Genug Theorie: Hier zeigen wir, wo KI in der Verwaltung schon heute konkret hilft.",
+                render: () => `
+
+      <!-- ▼ BAUSTEIN: Einzelne breite Link-Karte  ▼-->
+      ${acc('p3-Alltag', 'cpu', 'Wo hilft KI im Verwaltungsalltag', 'Ein Bespiel zum Thema <strong>Informationsextraktion</strong>', `
+    
+        <div class="inspo-grid" style="grid-template-columns:1fr;">
+            <a class="inspo-card" href="https://app3.dasu-digilab.de/" target="_blank" rel="noopener">
+                <div class="inspo-card-icon" style="background:#4285F4">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><text x="3" y="16" font-size="12" font-weight="700" fill="white" font-family="Georgia,serif">Aa</text></svg>
+                </div>
+                <strong>Praxisbeipiel </strong>
+                <p>Extrahiere automatisch die wichtigsten Infrmationen aus deinen Dokumenten.</p>
+                <span>↗ [digilab.de]</span>
+            </a>
+        </div>
+      `)}
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+    `
+            },
+
+            // ─────────────────────────────────────────────────────────────────────────
+            // PHASE 4 — Beispiel-Bausteine: Klick-Anleitung (Stepper), Übersichts-Karten
+            // ─────────────────────────────────────────────────────────────────────────
+            {
+                label: "Werkzeug",
+                eyebrow: "Phase 4",
+                title: "Wie bringe ich ein KI Projekt auf die Straße?",
+                intro: "Klein anfangen, schnell lernen, gezielt ausbauen: So gelingt der Weg von der Idee zur Umsetzung.",
+                render: () => `
+
+      <!-- ▼ BAUSTEIN: Karten mit fetter Überschrift ▼ -->
+           
+      ${acc('p4-ideenfindung', 'rocket', 'Use Case Ideation', 'Was würden Sie gerne in Ihrem Arbeitsalltag verbessern?', `
+        <div class="card">
+            <div class="card-text">
+            <strong>Ein mögliches Template</strong>
+            <!-- ✏️ Die hellgrauen Texte (class="placeholder") sind nur Beispiele -->
+            <ul>
+              <li><strong>Name:</strong> <span class="placeholder">KI-Posteingang – Anfragen automatisch vorsortieren</span></li>
+              <li><strong>Mehrwert:</strong> <span class="placeholder">Jede Anfrage landet sofort beim richtigen Team – ca. 1 Stunde weniger Sortieren pro Tag</span></li>
+              <li><strong>Challenge:</strong> <span class="placeholder">Viele Formate (Mail, Brief, Formular) und sensible Personendaten</span></li>
+              <li><strong>Bereich:</strong> <span class="placeholder">Sekretariat & Verwaltung</span></li>
+              <li><strong>Daten:</strong> <span class="placeholder">E-Mails, eingescannte Briefe, Zuständigkeitsliste</span></li>
+            </ul>
+            </div>
+        </div>
+      `)}
+
+      ${acc('p4-aufwand', 'rocket', 'Aufwand / Nutzen Matrix', 'Bewerten, Vergleichen & Priorisieren', `
+        <div class="card">
+            <div class="card-text">
+            <strong>Priorisierung von Use Cases</strong><br>
+            </div>
+
+            <!-- ✏️ MATRIX: Jedes Feld = [ Titel, Untertitel, Empfehlung, Emoji, Farbe ('good', 'bad' oder '') ]
+                 Reihenfolge: oben links, oben rechts, unten links, unten rechts.
+                 Klick auf ein Feld deckt die Empfehlung auf. -->
+            <div class="matrix">
+              <div class="matrix-axis-label y">Nutzen</div>
+              <div class="matrix-plot">
+                ${[
+                  ['Quick Wins', 'geringer Aufwand · hoher Nutzen', 'Unbedingt!', '😊', 'good'],
+                  ['Strategische Projekte', 'hoher Aufwand · hoher Nutzen', 'Vielleicht', '🤔', ''],
+                  ['Nice to have', 'geringer Aufwand · geringer Nutzen', 'Vielleicht', '😳', ''],
+                  ['Zeit- und Ressourcenfresser', 'hoher Aufwand · geringer Nutzen', 'Nein!', '☹️', 'bad'],
+                ].map(([title, sub, verdict, emoji, tone], i) => `
+                  <div class="quadrant ${i === 1 || i === 2 ? 'alt' : ''}" onclick="this.classList.toggle('revealed')">
+                    <div class="quadrant-title ${tone}">${title}</div>
+                    <div class="quadrant-sub">${sub}</div>
+                    <div class="quadrant-hint">Klicken ↗</div>
+                    <div class="quadrant-verdict">${verdict} <span class="emoji">${emoji}</span></div>
+                  </div>`).join('')}
+              </div>
+              <div class="matrix-axis-label x">Aufwand</div>
+            </div>
+        </div>
+      `)}
+
+
+      ${acc('p4-UseCAse', 'rocket', 'Roadmap ', 'Wie bringt man einen Use Case zum "leben"?', `
+        <div class="card">
+            <div class="card-text">
+            <strong>Vorgehen</strong><br>
+            </div>
+
+            <!-- ✏️ ABLAUF: Jede Zeile = [ Farbe der Kachel, Icon, Beschriftung, kleine Unterzeile ] -->
+            <div class="flow">
+              ${[
+                ['tile-idea', IC.lightbulb, 'Eigener Use Case', 'Idee & Problem'],
+                ['tile-openai', IC.openai, 'GenAI', 'ChatGPT'],
+                ['tile-doc', IC.fileText, 'One Pager', 'PDF'],
+                ['tile-anthropic', IC.anthropic, 'GenAI', 'Claude'],
+                ['tile-proto', IC.appWindow, 'Prototyp', 'Klickbare App'],
+              ].map(([tile, icon, label, sub], i) => `
+                ${i ? `<div class="flow-arrow" style="--i:${i * 2 - 1}"></div>` : ''}
+                <div class="flow-step" style="--i:${i * 2}">
+                  <div class="flow-icon"><div class="flow-tile ${tile}">${icon}</div></div>
+                  <div class="flow-label">${label}</div>
+                  <div class="flow-sub">${sub}</div>
+                </div>`).join('')}
+            </div>
+        </div>
+      `)}
+      <!-- ▲ ENDE BAUSTEIN ▲ -->
+
+    `
+            },
+
+            // ─────────────────────────────────────────────────────────────────────────
+            // PHASE 5 — ABSCHLUSS: Aufklappbare Karten + Kontakt-Boxen
+            // Die LETZTE Phase bekommt automatisch den "✓ Fertig"-Button (mit Konfetti)
+            // und den Feedback-Button unten rechts.
+            // ─────────────────────────────────────────────────────────────────────────
+            {
+                label: "Abschluss",
+                eyebrow: "Phase 5 · Ausblick",
+                title: "Die nächsten Schritte",
+                intro: "Digitalisierung und KI sind kein Zukunftsthema mehr, sondern eine Aufgabe für heute. Der wichtigste Schritt ist der erste.",
+                render: () => `
+
+      <!-- ▼ BAUSTEIN: KONTAKT-BOXEN (2 nebeneinander) ▼
+           ✏️ Dritte Box gewünscht? Eine Box kopieren und unten "1fr 1fr" zu "1fr 1fr 1fr" ändern.
+           ✏️ Bild/Logo in einer Box? An der markierten Stelle einfügen:
+              <img src="bild.png" alt="[Beschreibung]" style="max-width:120px;"> -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:0.5rem;">
+
+        <!-- Kontakt -->
+        <div class="contact-hero" style="margin-top:0;">
+          <div class="contact-glow"></div>
+          <div class="contact-hero-inner">
+            <div class="contact-overline">Kontakt</div>
+            <div class="contact-name" style="font-size:26px; margin-bottom:8px;">Josua Klöble</div>
+            <div class="contact-org">DASU · Transferzentrum für Digitalisierung, Analytics & Data Science Ulm</div>
+            <a class="contact-email" href="mailto:josua.kloeble@dasu.digital" style="font-size:15px; padding:11px 22px;">${IC.mail} josua.kloeble@dasu.digital</a>
+            <div class="qr-slot" style="margin-top:28px; margin-bottom:16px; display:flex; justify-content:center;">
+              <!-- QR-Code mit Kontaktdaten (vCard), als Vektorgrafik eingebettet -->
+              <div style="width:min(100%, 256px); aspect-ratio:1; border-radius:14px; overflow:hidden; background:white;"><svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="QR-Code Kontakt Josua Klöble (vCard)" style="display:block;width:100%;height:100%" viewBox="-4 -4 69 69" shape-rendering="crispEdges"><rect x="-4" y="-4" width="69" height="69" fill="#fff"/><path fill="#3D008D" d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM15 0h1v1h-1zM16 0h1v1h-1zM21 0h1v1h-1zM28 0h1v1h-1zM30 0h1v1h-1zM35 0h1v1h-1zM37 0h1v1h-1zM40 0h1v1h-1zM41 0h1v1h-1zM42 0h1v1h-1zM44 0h1v1h-1zM47 0h1v1h-1zM48 0h1v1h-1zM49 0h1v1h-1zM51 0h1v1h-1zM52 0h1v1h-1zM54 0h1v1h-1zM55 0h1v1h-1zM56 0h1v1h-1zM57 0h1v1h-1zM58 0h1v1h-1zM59 0h1v1h-1zM60 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM22 1h1v1h-1zM23 1h1v1h-1zM24 1h1v1h-1zM28 1h1v1h-1zM31 1h1v1h-1zM32 1h1v1h-1zM34 1h1v1h-1zM36 1h1v1h-1zM37 1h1v1h-1zM41 1h1v1h-1zM43 1h1v1h-1zM48 1h1v1h-1zM49 1h1v1h-1zM51 1h1v1h-1zM52 1h1v1h-1zM54 1h1v1h-1zM60 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM9 2h1v1h-1zM10 2h1v1h-1zM11 2h1v1h-1zM14 2h1v1h-1zM15 2h1v1h-1zM17 2h1v1h-1zM19 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM27 2h1v1h-1zM31 2h1v1h-1zM32 2h1v1h-1zM37 2h1v1h-1zM38 2h1v1h-1zM42 2h1v1h-1zM43 2h1v1h-1zM44 2h1v1h-1zM46 2h1v1h-1zM48 2h1v1h-1zM49 2h1v1h-1zM50 2h1v1h-1zM51 2h1v1h-1zM52 2h1v1h-1zM54 2h1v1h-1zM56 2h1v1h-1zM57 2h1v1h-1zM58 2h1v1h-1zM60 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM19 3h1v1h-1zM21 3h1v1h-1zM25 3h1v1h-1zM27 3h1v1h-1zM28 3h1v1h-1zM30 3h1v1h-1zM31 3h1v1h-1zM33 3h1v1h-1zM34 3h1v1h-1zM36 3h1v1h-1zM41 3h1v1h-1zM46 3h1v1h-1zM48 3h1v1h-1zM49 3h1v1h-1zM50 3h1v1h-1zM52 3h1v1h-1zM54 3h1v1h-1zM56 3h1v1h-1zM57 3h1v1h-1zM58 3h1v1h-1zM60 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM16 4h1v1h-1zM18 4h1v1h-1zM19 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM23 4h1v1h-1zM27 4h1v1h-1zM28 4h1v1h-1zM29 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM32 4h1v1h-1zM33 4h1v1h-1zM38 4h1v1h-1zM40 4h1v1h-1zM43 4h1v1h-1zM44 4h1v1h-1zM46 4h1v1h-1zM47 4h1v1h-1zM49 4h1v1h-1zM50 4h1v1h-1zM51 4h1v1h-1zM54 4h1v1h-1zM56 4h1v1h-1zM57 4h1v1h-1zM58 4h1v1h-1zM60 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM20 5h1v1h-1zM21 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM32 5h1v1h-1zM34 5h1v1h-1zM35 5h1v1h-1zM36 5h1v1h-1zM38 5h1v1h-1zM39 5h1v1h-1zM41 5h1v1h-1zM43 5h1v1h-1zM45 5h1v1h-1zM46 5h1v1h-1zM49 5h1v1h-1zM50 5h1v1h-1zM54 5h1v1h-1zM60 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM34 6h1v1h-1zM36 6h1v1h-1zM38 6h1v1h-1zM40 6h1v1h-1zM42 6h1v1h-1zM44 6h1v1h-1zM46 6h1v1h-1zM48 6h1v1h-1zM50 6h1v1h-1zM52 6h1v1h-1zM54 6h1v1h-1zM55 6h1v1h-1zM56 6h1v1h-1zM57 6h1v1h-1zM58 6h1v1h-1zM59 6h1v1h-1zM60 6h1v1h-1zM8 7h1v1h-1zM14 7h1v1h-1zM16 7h1v1h-1zM17 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM24 7h1v1h-1zM26 7h1v1h-1zM28 7h1v1h-1zM32 7h1v1h-1zM34 7h1v1h-1zM35 7h1v1h-1zM36 7h1v1h-1zM37 7h1v1h-1zM40 7h1v1h-1zM42 7h1v1h-1zM47 7h1v1h-1zM48 7h1v1h-1zM50 7h1v1h-1zM51 7h1v1h-1zM0 8h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM11 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM17 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM27 8h1v1h-1zM28 8h1v1h-1zM29 8h1v1h-1zM30 8h1v1h-1zM31 8h1v1h-1zM32 8h1v1h-1zM33 8h1v1h-1zM37 8h1v1h-1zM39 8h1v1h-1zM40 8h1v1h-1zM42 8h1v1h-1zM45 8h1v1h-1zM49 8h1v1h-1zM50 8h1v1h-1zM51 8h1v1h-1zM54 8h1v1h-1zM57 8h1v1h-1zM59 8h1v1h-1zM60 8h1v1h-1zM2 9h1v1h-1zM3 9h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM8 9h1v1h-1zM9 9h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM16 9h1v1h-1zM19 9h1v1h-1zM21 9h1v1h-1zM24 9h1v1h-1zM26 9h1v1h-1zM28 9h1v1h-1zM30 9h1v1h-1zM32 9h1v1h-1zM35 9h1v1h-1zM36 9h1v1h-1zM37 9h1v1h-1zM38 9h1v1h-1zM39 9h1v1h-1zM40 9h1v1h-1zM42 9h1v1h-1zM43 9h1v1h-1zM47 9h1v1h-1zM48 9h1v1h-1zM49 9h1v1h-1zM51 9h1v1h-1zM53 9h1v1h-1zM54 9h1v1h-1zM57 9h1v1h-1zM58 9h1v1h-1zM59 9h1v1h-1zM2 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM9 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM13 10h1v1h-1zM14 10h1v1h-1zM17 10h1v1h-1zM19 10h1v1h-1zM23 10h1v1h-1zM24 10h1v1h-1zM26 10h1v1h-1zM28 10h1v1h-1zM29 10h1v1h-1zM31 10h1v1h-1zM32 10h1v1h-1zM36 10h1v1h-1zM38 10h1v1h-1zM40 10h1v1h-1zM42 10h1v1h-1zM44 10h1v1h-1zM50 10h1v1h-1zM53 10h1v1h-1zM54 10h1v1h-1zM55 10h1v1h-1zM57 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM2 11h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM11 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM18 11h1v1h-1zM19 11h1v1h-1zM20 11h1v1h-1zM22 11h1v1h-1zM23 11h1v1h-1zM27 11h1v1h-1zM28 11h1v1h-1zM29 11h1v1h-1zM31 11h1v1h-1zM34 11h1v1h-1zM35 11h1v1h-1zM36 11h1v1h-1zM41 11h1v1h-1zM42 11h1v1h-1zM43 11h1v1h-1zM44 11h1v1h-1zM46 11h1v1h-1zM47 11h1v1h-1zM51 11h1v1h-1zM56 11h1v1h-1zM57 11h1v1h-1zM58 11h1v1h-1zM60 11h1v1h-1zM0 12h1v1h-1zM3 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM11 12h1v1h-1zM14 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM21 12h1v1h-1zM24 12h1v1h-1zM25 12h1v1h-1zM27 12h1v1h-1zM30 12h1v1h-1zM33 12h1v1h-1zM36 12h1v1h-1zM37 12h1v1h-1zM45 12h1v1h-1zM47 12h1v1h-1zM48 12h1v1h-1zM49 12h1v1h-1zM50 12h1v1h-1zM52 12h1v1h-1zM54 12h1v1h-1zM58 12h1v1h-1zM60 12h1v1h-1zM2 13h1v1h-1zM3 13h1v1h-1zM4 13h1v1h-1zM5 13h1v1h-1zM7 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM13 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM17 13h1v1h-1zM19 13h1v1h-1zM20 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM31 13h1v1h-1zM33 13h1v1h-1zM37 13h1v1h-1zM38 13h1v1h-1zM39 13h1v1h-1zM40 13h1v1h-1zM43 13h1v1h-1zM47 13h1v1h-1zM48 13h1v1h-1zM50 13h1v1h-1zM51 13h1v1h-1zM58 13h1v1h-1zM59 13h1v1h-1zM60 13h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM7 14h1v1h-1zM11 14h1v1h-1zM15 14h1v1h-1zM16 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM23 14h1v1h-1zM24 14h1v1h-1zM27 14h1v1h-1zM29 14h1v1h-1zM30 14h1v1h-1zM35 14h1v1h-1zM37 14h1v1h-1zM38 14h1v1h-1zM41 14h1v1h-1zM42 14h1v1h-1zM43 14h1v1h-1zM50 14h1v1h-1zM52 14h1v1h-1zM56 14h1v1h-1zM59 14h1v1h-1zM2 15h1v1h-1zM3 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h1v1h-1zM29 15h1v1h-1zM30 15h1v1h-1zM32 15h1v1h-1zM33 15h1v1h-1zM34 15h1v1h-1zM36 15h1v1h-1zM40 15h1v1h-1zM42 15h1v1h-1zM43 15h1v1h-1zM44 15h1v1h-1zM48 15h1v1h-1zM50 15h1v1h-1zM52 15h1v1h-1zM53 15h1v1h-1zM54 15h1v1h-1zM55 15h1v1h-1zM56 15h1v1h-1zM59 15h1v1h-1zM0 16h1v1h-1zM1 16h1v1h-1zM3 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM11 16h1v1h-1zM12 16h1v1h-1zM13 16h1v1h-1zM16 16h1v1h-1zM18 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM22 16h1v1h-1zM25 16h1v1h-1zM26 16h1v1h-1zM27 16h1v1h-1zM30 16h1v1h-1zM34 16h1v1h-1zM35 16h1v1h-1zM37 16h1v1h-1zM41 16h1v1h-1zM44 16h1v1h-1zM46 16h1v1h-1zM48 16h1v1h-1zM49 16h1v1h-1zM50 16h1v1h-1zM56 16h1v1h-1zM59 16h1v1h-1zM60 16h1v1h-1zM2 17h1v1h-1zM4 17h1v1h-1zM7 17h1v1h-1zM8 17h1v1h-1zM10 17h1v1h-1zM11 17h1v1h-1zM17 17h1v1h-1zM18 17h1v1h-1zM20 17h1v1h-1zM21 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM26 17h1v1h-1zM29 17h1v1h-1zM31 17h1v1h-1zM32 17h1v1h-1zM33 17h1v1h-1zM34 17h1v1h-1zM35 17h1v1h-1zM36 17h1v1h-1zM39 17h1v1h-1zM41 17h1v1h-1zM43 17h1v1h-1zM46 17h1v1h-1zM47 17h1v1h-1zM51 17h1v1h-1zM52 17h1v1h-1zM53 17h1v1h-1zM55 17h1v1h-1zM56 17h1v1h-1zM58 17h1v1h-1zM0 18h1v1h-1zM1 18h1v1h-1zM2 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM8 18h1v1h-1zM9 18h1v1h-1zM11 18h1v1h-1zM15 18h1v1h-1zM17 18h1v1h-1zM18 18h1v1h-1zM21 18h1v1h-1zM22 18h1v1h-1zM23 18h1v1h-1zM27 18h1v1h-1zM30 18h1v1h-1zM38 18h1v1h-1zM39 18h1v1h-1zM40 18h1v1h-1zM41 18h1v1h-1zM42 18h1v1h-1zM43 18h1v1h-1zM45 18h1v1h-1zM46 18h1v1h-1zM48 18h1v1h-1zM49 18h1v1h-1zM50 18h1v1h-1zM51 18h1v1h-1zM52 18h1v1h-1zM54 18h1v1h-1zM56 18h1v1h-1zM57 18h1v1h-1zM58 18h1v1h-1zM59 18h1v1h-1zM60 18h1v1h-1zM0 19h1v1h-1zM1 19h1v1h-1zM2 19h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM5 19h1v1h-1zM9 19h1v1h-1zM13 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM20 19h1v1h-1zM21 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM26 19h1v1h-1zM27 19h1v1h-1zM33 19h1v1h-1zM35 19h1v1h-1zM36 19h1v1h-1zM37 19h1v1h-1zM38 19h1v1h-1zM39 19h1v1h-1zM40 19h1v1h-1zM44 19h1v1h-1zM46 19h1v1h-1zM48 19h1v1h-1zM53 19h1v1h-1zM54 19h1v1h-1zM56 19h1v1h-1zM57 19h1v1h-1zM0 20h1v1h-1zM3 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM14 20h1v1h-1zM18 20h1v1h-1zM19 20h1v1h-1zM20 20h1v1h-1zM22 20h1v1h-1zM25 20h1v1h-1zM30 20h1v1h-1zM31 20h1v1h-1zM33 20h1v1h-1zM34 20h1v1h-1zM35 20h1v1h-1zM39 20h1v1h-1zM40 20h1v1h-1zM41 20h1v1h-1zM45 20h1v1h-1zM46 20h1v1h-1zM50 20h1v1h-1zM51 20h1v1h-1zM52 20h1v1h-1zM53 20h1v1h-1zM54 20h1v1h-1zM58 20h1v1h-1zM59 20h1v1h-1zM0 21h1v1h-1zM3 21h1v1h-1zM7 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM12 21h1v1h-1zM13 21h1v1h-1zM14 21h1v1h-1zM15 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM20 21h1v1h-1zM21 21h1v1h-1zM24 21h1v1h-1zM25 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM30 21h1v1h-1zM32 21h1v1h-1zM36 21h1v1h-1zM37 21h1v1h-1zM40 21h1v1h-1zM41 21h1v1h-1zM42 21h1v1h-1zM44 21h1v1h-1zM47 21h1v1h-1zM48 21h1v1h-1zM49 21h1v1h-1zM54 21h1v1h-1zM56 21h1v1h-1zM58 21h1v1h-1zM60 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM7 22h1v1h-1zM11 22h1v1h-1zM14 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM18 22h1v1h-1zM25 22h1v1h-1zM30 22h1v1h-1zM31 22h1v1h-1zM32 22h1v1h-1zM34 22h1v1h-1zM36 22h1v1h-1zM39 22h1v1h-1zM40 22h1v1h-1zM44 22h1v1h-1zM49 22h1v1h-1zM50 22h1v1h-1zM51 22h1v1h-1zM54 22h1v1h-1zM59 22h1v1h-1zM1 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM5 23h1v1h-1zM7 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM22 23h1v1h-1zM24 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM29 23h1v1h-1zM33 23h1v1h-1zM34 23h1v1h-1zM36 23h1v1h-1zM37 23h1v1h-1zM38 23h1v1h-1zM41 23h1v1h-1zM43 23h1v1h-1zM44 23h1v1h-1zM45 23h1v1h-1zM48 23h1v1h-1zM49 23h1v1h-1zM52 23h1v1h-1zM54 23h1v1h-1zM55 23h1v1h-1zM56 23h1v1h-1zM57 23h1v1h-1zM0 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM9 24h1v1h-1zM16 24h1v1h-1zM17 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM25 24h1v1h-1zM27 24h1v1h-1zM30 24h1v1h-1zM31 24h1v1h-1zM35 24h1v1h-1zM36 24h1v1h-1zM37 24h1v1h-1zM41 24h1v1h-1zM42 24h1v1h-1zM43 24h1v1h-1zM46 24h1v1h-1zM48 24h1v1h-1zM49 24h1v1h-1zM51 24h1v1h-1zM52 24h1v1h-1zM57 24h1v1h-1zM59 24h1v1h-1zM5 25h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM12 25h1v1h-1zM13 25h1v1h-1zM16 25h1v1h-1zM17 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM21 25h1v1h-1zM22 25h1v1h-1zM23 25h1v1h-1zM25 25h1v1h-1zM27 25h1v1h-1zM29 25h1v1h-1zM30 25h1v1h-1zM31 25h1v1h-1zM32 25h1v1h-1zM33 25h1v1h-1zM35 25h1v1h-1zM38 25h1v1h-1zM39 25h1v1h-1zM44 25h1v1h-1zM45 25h1v1h-1zM48 25h1v1h-1zM49 25h1v1h-1zM50 25h1v1h-1zM51 25h1v1h-1zM56 25h1v1h-1zM57 25h1v1h-1zM59 25h1v1h-1zM60 25h1v1h-1zM0 26h1v1h-1zM1 26h1v1h-1zM2 26h1v1h-1zM5 26h1v1h-1zM6 26h1v1h-1zM7 26h1v1h-1zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM15 26h1v1h-1zM21 26h1v1h-1zM23 26h1v1h-1zM25 26h1v1h-1zM30 26h1v1h-1zM34 26h1v1h-1zM35 26h1v1h-1zM36 26h1v1h-1zM38 26h1v1h-1zM39 26h1v1h-1zM40 26h1v1h-1zM42 26h1v1h-1zM50 26h1v1h-1zM52 26h1v1h-1zM53 26h1v1h-1zM56 26h1v1h-1zM57 26h1v1h-1zM58 26h1v1h-1zM59 26h1v1h-1zM2 27h1v1h-1zM4 27h1v1h-1zM5 27h1v1h-1zM9 27h1v1h-1zM12 27h1v1h-1zM13 27h1v1h-1zM14 27h1v1h-1zM16 27h1v1h-1zM18 27h1v1h-1zM24 27h1v1h-1zM25 27h1v1h-1zM27 27h1v1h-1zM29 27h1v1h-1zM30 27h1v1h-1zM32 27h1v1h-1zM33 27h1v1h-1zM34 27h1v1h-1zM40 27h1v1h-1zM42 27h1v1h-1zM44 27h1v1h-1zM45 27h1v1h-1zM46 27h1v1h-1zM47 27h1v1h-1zM48 27h1v1h-1zM49 27h1v1h-1zM52 27h1v1h-1zM53 27h1v1h-1zM54 27h1v1h-1zM56 27h1v1h-1zM59 27h1v1h-1zM1 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM7 28h1v1h-1zM8 28h1v1h-1zM11 28h1v1h-1zM13 28h1v1h-1zM14 28h1v1h-1zM15 28h1v1h-1zM16 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM19 28h1v1h-1zM22 28h1v1h-1zM23 28h1v1h-1zM24 28h1v1h-1zM25 28h1v1h-1zM26 28h1v1h-1zM27 28h1v1h-1zM28 28h1v1h-1zM29 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM32 28h1v1h-1zM34 28h1v1h-1zM37 28h1v1h-1zM39 28h1v1h-1zM41 28h1v1h-1zM43 28h1v1h-1zM44 28h1v1h-1zM45 28h1v1h-1zM50 28h1v1h-1zM52 28h1v1h-1zM53 28h1v1h-1zM54 28h1v1h-1zM55 28h1v1h-1zM56 28h1v1h-1zM58 28h1v1h-1zM0 29h1v1h-1zM1 29h1v1h-1zM2 29h1v1h-1zM3 29h1v1h-1zM4 29h1v1h-1zM8 29h1v1h-1zM11 29h1v1h-1zM15 29h1v1h-1zM16 29h1v1h-1zM20 29h1v1h-1zM21 29h1v1h-1zM22 29h1v1h-1zM23 29h1v1h-1zM25 29h1v1h-1zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h1v1h-1zM33 29h1v1h-1zM34 29h1v1h-1zM35 29h1v1h-1zM37 29h1v1h-1zM38 29h1v1h-1zM43 29h1v1h-1zM44 29h1v1h-1zM45 29h1v1h-1zM46 29h1v1h-1zM47 29h1v1h-1zM48 29h1v1h-1zM49 29h1v1h-1zM52 29h1v1h-1zM56 29h1v1h-1zM57 29h1v1h-1zM58 29h1v1h-1zM59 29h1v1h-1zM60 29h1v1h-1zM0 30h1v1h-1zM1 30h1v1h-1zM3 30h1v1h-1zM4 30h1v1h-1zM6 30h1v1h-1zM8 30h1v1h-1zM12 30h1v1h-1zM22 30h1v1h-1zM24 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM33 30h1v1h-1zM34 30h1v1h-1zM35 30h1v1h-1zM36 30h1v1h-1zM37 30h1v1h-1zM38 30h1v1h-1zM39 30h1v1h-1zM42 30h1v1h-1zM45 30h1v1h-1zM48 30h1v1h-1zM52 30h1v1h-1zM54 30h1v1h-1zM56 30h1v1h-1zM57 30h1v1h-1zM59 30h1v1h-1zM60 30h1v1h-1zM1 31h1v1h-1zM2 31h1v1h-1zM4 31h1v1h-1zM8 31h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM13 31h1v1h-1zM15 31h1v1h-1zM18 31h1v1h-1zM20 31h1v1h-1zM22 31h1v1h-1zM25 31h1v1h-1zM28 31h1v1h-1zM32 31h1v1h-1zM33 31h1v1h-1zM35 31h1v1h-1zM36 31h1v1h-1zM37 31h1v1h-1zM41 31h1v1h-1zM43 31h1v1h-1zM45 31h1v1h-1zM46 31h1v1h-1zM52 31h1v1h-1zM56 31h1v1h-1zM57 31h1v1h-1zM0 32h1v1h-1zM2 32h1v1h-1zM3 32h1v1h-1zM4 32h1v1h-1zM5 32h1v1h-1zM6 32h1v1h-1zM7 32h1v1h-1zM8 32h1v1h-1zM9 32h1v1h-1zM11 32h1v1h-1zM12 32h1v1h-1zM14 32h1v1h-1zM16 32h1v1h-1zM20 32h1v1h-1zM21 32h1v1h-1zM22 32h1v1h-1zM24 32h1v1h-1zM28 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM31 32h1v1h-1zM32 32h1v1h-1zM35 32h1v1h-1zM37 32h1v1h-1zM38 32h1v1h-1zM39 32h1v1h-1zM40 32h1v1h-1zM41 32h1v1h-1zM42 32h1v1h-1zM43 32h1v1h-1zM45 32h1v1h-1zM46 32h1v1h-1zM47 32h1v1h-1zM49 32h1v1h-1zM50 32h1v1h-1zM51 32h1v1h-1zM52 32h1v1h-1zM53 32h1v1h-1zM54 32h1v1h-1zM55 32h1v1h-1zM56 32h1v1h-1zM59 32h1v1h-1zM1 33h1v1h-1zM2 33h1v1h-1zM3 33h1v1h-1zM10 33h1v1h-1zM11 33h1v1h-1zM12 33h1v1h-1zM14 33h1v1h-1zM17 33h1v1h-1zM19 33h1v1h-1zM20 33h1v1h-1zM21 33h1v1h-1zM23 33h1v1h-1zM24 33h1v1h-1zM25 33h1v1h-1zM26 33h1v1h-1zM28 33h1v1h-1zM30 33h1v1h-1zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM37 33h1v1h-1zM39 33h1v1h-1zM40 33h1v1h-1zM41 33h1v1h-1zM42 33h1v1h-1zM44 33h1v1h-1zM45 33h1v1h-1zM47 33h1v1h-1zM48 33h1v1h-1zM49 33h1v1h-1zM51 33h1v1h-1zM53 33h1v1h-1zM54 33h1v1h-1zM55 33h1v1h-1zM57 33h1v1h-1zM60 33h1v1h-1zM4 34h1v1h-1zM6 34h1v1h-1zM9 34h1v1h-1zM11 34h1v1h-1zM12 34h1v1h-1zM13 34h1v1h-1zM15 34h1v1h-1zM16 34h1v1h-1zM18 34h1v1h-1zM19 34h1v1h-1zM21 34h1v1h-1zM23 34h1v1h-1zM32 34h1v1h-1zM36 34h1v1h-1zM37 34h1v1h-1zM40 34h1v1h-1zM41 34h1v1h-1zM42 34h1v1h-1zM46 34h1v1h-1zM50 34h1v1h-1zM51 34h1v1h-1zM53 34h1v1h-1zM57 34h1v1h-1zM1 35h1v1h-1zM4 35h1v1h-1zM7 35h1v1h-1zM9 35h1v1h-1zM10 35h1v1h-1zM13 35h1v1h-1zM14 35h1v1h-1zM15 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM22 35h1v1h-1zM23 35h1v1h-1zM27 35h1v1h-1zM33 35h1v1h-1zM34 35h1v1h-1zM35 35h1v1h-1zM36 35h1v1h-1zM39 35h1v1h-1zM44 35h1v1h-1zM46 35h1v1h-1zM48 35h1v1h-1zM51 35h1v1h-1zM55 35h1v1h-1zM57 35h1v1h-1zM58 35h1v1h-1zM0 36h1v1h-1zM2 36h1v1h-1zM3 36h1v1h-1zM4 36h1v1h-1zM5 36h1v1h-1zM6 36h1v1h-1zM7 36h1v1h-1zM8 36h1v1h-1zM9 36h1v1h-1zM10 36h1v1h-1zM11 36h1v1h-1zM12 36h1v1h-1zM13 36h1v1h-1zM14 36h1v1h-1zM15 36h1v1h-1zM21 36h1v1h-1zM25 36h1v1h-1zM29 36h1v1h-1zM30 36h1v1h-1zM31 36h1v1h-1zM36 36h1v1h-1zM37 36h1v1h-1zM39 36h1v1h-1zM41 36h1v1h-1zM45 36h1v1h-1zM47 36h1v1h-1zM48 36h1v1h-1zM51 36h1v1h-1zM52 36h1v1h-1zM54 36h1v1h-1zM57 36h1v1h-1zM60 36h1v1h-1zM2 37h1v1h-1zM3 37h1v1h-1zM8 37h1v1h-1zM9 37h1v1h-1zM10 37h1v1h-1zM11 37h1v1h-1zM16 37h1v1h-1zM17 37h1v1h-1zM18 37h1v1h-1zM19 37h1v1h-1zM21 37h1v1h-1zM22 37h1v1h-1zM27 37h1v1h-1zM28 37h1v1h-1zM29 37h1v1h-1zM30 37h1v1h-1zM31 37h1v1h-1zM32 37h1v1h-1zM33 37h1v1h-1zM36 37h1v1h-1zM38 37h1v1h-1zM39 37h1v1h-1zM40 37h1v1h-1zM43 37h1v1h-1zM44 37h1v1h-1zM45 37h1v1h-1zM47 37h1v1h-1zM48 37h1v1h-1zM49 37h1v1h-1zM50 37h1v1h-1zM55 37h1v1h-1zM56 37h1v1h-1zM57 37h1v1h-1zM60 37h1v1h-1zM0 38h1v1h-1zM3 38h1v1h-1zM4 38h1v1h-1zM6 38h1v1h-1zM9 38h1v1h-1zM10 38h1v1h-1zM11 38h1v1h-1zM12 38h1v1h-1zM13 38h1v1h-1zM14 38h1v1h-1zM16 38h1v1h-1zM18 38h1v1h-1zM19 38h1v1h-1zM20 38h1v1h-1zM22 38h1v1h-1zM23 38h1v1h-1zM24 38h1v1h-1zM26 38h1v1h-1zM29 38h1v1h-1zM32 38h1v1h-1zM33 38h1v1h-1zM34 38h1v1h-1zM37 38h1v1h-1zM38 38h1v1h-1zM42 38h1v1h-1zM43 38h1v1h-1zM44 38h1v1h-1zM46 38h1v1h-1zM49 38h1v1h-1zM50 38h1v1h-1zM53 38h1v1h-1zM57 38h1v1h-1zM58 38h1v1h-1zM59 38h1v1h-1zM60 38h1v1h-1zM0 39h1v1h-1zM2 39h1v1h-1zM4 39h1v1h-1zM5 39h1v1h-1zM7 39h1v1h-1zM8 39h1v1h-1zM11 39h1v1h-1zM13 39h1v1h-1zM15 39h1v1h-1zM16 39h1v1h-1zM18 39h1v1h-1zM20 39h1v1h-1zM21 39h1v1h-1zM22 39h1v1h-1zM24 39h1v1h-1zM26 39h1v1h-1zM28 39h1v1h-1zM29 39h1v1h-1zM33 39h1v1h-1zM39 39h1v1h-1zM40 39h1v1h-1zM41 39h1v1h-1zM42 39h1v1h-1zM43 39h1v1h-1zM46 39h1v1h-1zM48 39h1v1h-1zM49 39h1v1h-1zM51 39h1v1h-1zM52 39h1v1h-1zM56 39h1v1h-1zM60 39h1v1h-1zM0 40h1v1h-1zM1 40h1v1h-1zM4 40h1v1h-1zM5 40h1v1h-1zM6 40h1v1h-1zM7 40h1v1h-1zM8 40h1v1h-1zM9 40h1v1h-1zM14 40h1v1h-1zM16 40h1v1h-1zM19 40h1v1h-1zM20 40h1v1h-1zM21 40h1v1h-1zM22 40h1v1h-1zM23 40h1v1h-1zM25 40h1v1h-1zM28 40h1v1h-1zM32 40h1v1h-1zM34 40h1v1h-1zM37 40h1v1h-1zM38 40h1v1h-1zM39 40h1v1h-1zM41 40h1v1h-1zM43 40h1v1h-1zM44 40h1v1h-1zM46 40h1v1h-1zM50 40h1v1h-1zM52 40h1v1h-1zM54 40h1v1h-1zM55 40h1v1h-1zM59 40h1v1h-1zM1 41h1v1h-1zM2 41h1v1h-1zM4 41h1v1h-1zM5 41h1v1h-1zM8 41h1v1h-1zM11 41h1v1h-1zM12 41h1v1h-1zM13 41h1v1h-1zM14 41h1v1h-1zM15 41h1v1h-1zM18 41h1v1h-1zM19 41h1v1h-1zM21 41h1v1h-1zM22 41h1v1h-1zM23 41h1v1h-1zM24 41h1v1h-1zM25 41h1v1h-1zM27 41h1v1h-1zM28 41h1v1h-1zM29 41h1v1h-1zM30 41h1v1h-1zM32 41h1v1h-1zM33 41h1v1h-1zM34 41h1v1h-1zM35 41h1v1h-1zM36 41h1v1h-1zM37 41h1v1h-1zM45 41h1v1h-1zM46 41h1v1h-1zM51 41h1v1h-1zM53 41h1v1h-1zM55 41h1v1h-1zM58 41h1v1h-1zM60 41h1v1h-1zM0 42h1v1h-1zM2 42h1v1h-1zM4 42h1v1h-1zM6 42h1v1h-1zM7 42h1v1h-1zM9 42h1v1h-1zM10 42h1v1h-1zM11 42h1v1h-1zM12 42h1v1h-1zM13 42h1v1h-1zM14 42h1v1h-1zM15 42h1v1h-1zM16 42h1v1h-1zM17 42h1v1h-1zM20 42h1v1h-1zM27 42h1v1h-1zM30 42h1v1h-1zM31 42h1v1h-1zM32 42h1v1h-1zM33 42h1v1h-1zM34 42h1v1h-1zM38 42h1v1h-1zM39 42h1v1h-1zM40 42h1v1h-1zM41 42h1v1h-1zM43 42h1v1h-1zM48 42h1v1h-1zM49 42h1v1h-1zM53 42h1v1h-1zM54 42h1v1h-1zM56 42h1v1h-1zM58 42h1v1h-1zM59 42h1v1h-1zM60 42h1v1h-1zM1 43h1v1h-1zM2 43h1v1h-1zM11 43h1v1h-1zM12 43h1v1h-1zM13 43h1v1h-1zM14 43h1v1h-1zM15 43h1v1h-1zM17 43h1v1h-1zM18 43h1v1h-1zM19 43h1v1h-1zM20 43h1v1h-1zM21 43h1v1h-1zM24 43h1v1h-1zM25 43h1v1h-1zM27 43h1v1h-1zM28 43h1v1h-1zM31 43h1v1h-1zM32 43h1v1h-1zM33 43h1v1h-1zM34 43h1v1h-1zM35 43h1v1h-1zM36 43h1v1h-1zM38 43h1v1h-1zM40 43h1v1h-1zM42 43h1v1h-1zM43 43h1v1h-1zM45 43h1v1h-1zM48 43h1v1h-1zM50 43h1v1h-1zM52 43h1v1h-1zM53 43h1v1h-1zM56 43h1v1h-1zM58 43h1v1h-1zM2 44h1v1h-1zM6 44h1v1h-1zM8 44h1v1h-1zM9 44h1v1h-1zM14 44h1v1h-1zM15 44h1v1h-1zM17 44h1v1h-1zM20 44h1v1h-1zM21 44h1v1h-1zM23 44h1v1h-1zM24 44h1v1h-1zM27 44h1v1h-1zM28 44h1v1h-1zM29 44h1v1h-1zM31 44h1v1h-1zM35 44h1v1h-1zM37 44h1v1h-1zM39 44h1v1h-1zM40 44h1v1h-1zM45 44h1v1h-1zM46 44h1v1h-1zM47 44h1v1h-1zM50 44h1v1h-1zM54 44h1v1h-1zM55 44h1v1h-1zM57 44h1v1h-1zM0 45h1v1h-1zM9 45h1v1h-1zM11 45h1v1h-1zM12 45h1v1h-1zM14 45h1v1h-1zM16 45h1v1h-1zM19 45h1v1h-1zM22 45h1v1h-1zM23 45h1v1h-1zM24 45h1v1h-1zM25 45h1v1h-1zM26 45h1v1h-1zM27 45h1v1h-1zM28 45h1v1h-1zM29 45h1v1h-1zM31 45h1v1h-1zM32 45h1v1h-1zM35 45h1v1h-1zM36 45h1v1h-1zM41 45h1v1h-1zM42 45h1v1h-1zM43 45h1v1h-1zM45 45h1v1h-1zM47 45h1v1h-1zM49 45h1v1h-1zM53 45h1v1h-1zM58 45h1v1h-1zM0 46h1v1h-1zM1 46h1v1h-1zM3 46h1v1h-1zM4 46h1v1h-1zM5 46h1v1h-1zM6 46h1v1h-1zM9 46h1v1h-1zM10 46h1v1h-1zM12 46h1v1h-1zM16 46h1v1h-1zM17 46h1v1h-1zM19 46h1v1h-1zM20 46h1v1h-1zM22 46h1v1h-1zM25 46h1v1h-1zM29 46h1v1h-1zM31 46h1v1h-1zM37 46h1v1h-1zM40 46h1v1h-1zM41 46h1v1h-1zM42 46h1v1h-1zM44 46h1v1h-1zM46 46h1v1h-1zM47 46h1v1h-1zM49 46h1v1h-1zM56 46h1v1h-1zM58 46h1v1h-1zM0 47h1v1h-1zM2 47h1v1h-1zM4 47h1v1h-1zM5 47h1v1h-1zM7 47h1v1h-1zM10 47h1v1h-1zM11 47h1v1h-1zM12 47h1v1h-1zM13 47h1v1h-1zM16 47h1v1h-1zM19 47h1v1h-1zM20 47h1v1h-1zM22 47h1v1h-1zM24 47h1v1h-1zM25 47h1v1h-1zM27 47h1v1h-1zM28 47h1v1h-1zM29 47h1v1h-1zM33 47h1v1h-1zM35 47h1v1h-1zM36 47h1v1h-1zM39 47h1v1h-1zM42 47h1v1h-1zM44 47h1v1h-1zM45 47h1v1h-1zM47 47h1v1h-1zM49 47h1v1h-1zM50 47h1v1h-1zM51 47h1v1h-1zM56 47h1v1h-1zM57 47h1v1h-1zM58 47h1v1h-1zM59 47h1v1h-1zM2 48h1v1h-1zM3 48h1v1h-1zM4 48h1v1h-1zM6 48h1v1h-1zM7 48h1v1h-1zM8 48h1v1h-1zM9 48h1v1h-1zM10 48h1v1h-1zM11 48h1v1h-1zM17 48h1v1h-1zM18 48h1v1h-1zM19 48h1v1h-1zM21 48h1v1h-1zM25 48h1v1h-1zM27 48h1v1h-1zM28 48h1v1h-1zM29 48h1v1h-1zM30 48h1v1h-1zM31 48h1v1h-1zM32 48h1v1h-1zM34 48h1v1h-1zM35 48h1v1h-1zM36 48h1v1h-1zM38 48h1v1h-1zM43 48h1v1h-1zM46 48h1v1h-1zM47 48h1v1h-1zM48 48h1v1h-1zM50 48h1v1h-1zM51 48h1v1h-1zM52 48h1v1h-1zM53 48h1v1h-1zM54 48h1v1h-1zM56 48h1v1h-1zM57 48h1v1h-1zM58 48h1v1h-1zM0 49h1v1h-1zM2 49h1v1h-1zM9 49h1v1h-1zM10 49h1v1h-1zM11 49h1v1h-1zM12 49h1v1h-1zM14 49h1v1h-1zM17 49h1v1h-1zM18 49h1v1h-1zM21 49h1v1h-1zM27 49h1v1h-1zM28 49h1v1h-1zM32 49h1v1h-1zM33 49h1v1h-1zM35 49h1v1h-1zM36 49h1v1h-1zM37 49h1v1h-1zM38 49h1v1h-1zM39 49h1v1h-1zM44 49h1v1h-1zM45 49h1v1h-1zM49 49h1v1h-1zM50 49h1v1h-1zM51 49h1v1h-1zM52 49h1v1h-1zM53 49h1v1h-1zM54 49h1v1h-1zM56 49h1v1h-1zM59 49h1v1h-1zM60 49h1v1h-1zM2 50h1v1h-1zM3 50h1v1h-1zM4 50h1v1h-1zM5 50h1v1h-1zM6 50h1v1h-1zM7 50h1v1h-1zM8 50h1v1h-1zM11 50h1v1h-1zM13 50h1v1h-1zM16 50h1v1h-1zM17 50h1v1h-1zM18 50h1v1h-1zM20 50h1v1h-1zM21 50h1v1h-1zM22 50h1v1h-1zM24 50h1v1h-1zM29 50h1v1h-1zM32 50h1v1h-1zM33 50h1v1h-1zM37 50h1v1h-1zM38 50h1v1h-1zM39 50h1v1h-1zM40 50h1v1h-1zM46 50h1v1h-1zM51 50h1v1h-1zM52 50h1v1h-1zM53 50h1v1h-1zM56 50h1v1h-1zM57 50h1v1h-1zM58 50h1v1h-1zM59 50h1v1h-1zM0 51h1v1h-1zM1 51h1v1h-1zM2 51h1v1h-1zM4 51h1v1h-1zM7 51h1v1h-1zM9 51h1v1h-1zM12 51h1v1h-1zM13 51h1v1h-1zM14 51h1v1h-1zM15 51h1v1h-1zM18 51h1v1h-1zM19 51h1v1h-1zM21 51h1v1h-1zM23 51h1v1h-1zM25 51h1v1h-1zM33 51h1v1h-1zM37 51h1v1h-1zM40 51h1v1h-1zM41 51h1v1h-1zM42 51h1v1h-1zM43 51h1v1h-1zM44 51h1v1h-1zM45 51h1v1h-1zM48 51h1v1h-1zM49 51h1v1h-1zM51 51h1v1h-1zM52 51h1v1h-1zM54 51h1v1h-1zM55 51h1v1h-1zM59 51h1v1h-1zM60 51h1v1h-1zM0 52h1v1h-1zM1 52h1v1h-1zM2 52h1v1h-1zM3 52h1v1h-1zM6 52h1v1h-1zM7 52h1v1h-1zM8 52h1v1h-1zM12 52h1v1h-1zM14 52h1v1h-1zM15 52h1v1h-1zM16 52h1v1h-1zM17 52h1v1h-1zM19 52h1v1h-1zM20 52h1v1h-1zM24 52h1v1h-1zM26 52h1v1h-1zM28 52h1v1h-1zM29 52h1v1h-1zM30 52h1v1h-1zM31 52h1v1h-1zM32 52h1v1h-1zM33 52h1v1h-1zM34 52h1v1h-1zM38 52h1v1h-1zM41 52h1v1h-1zM42 52h1v1h-1zM44 52h1v1h-1zM50 52h1v1h-1zM52 52h1v1h-1zM53 52h1v1h-1zM54 52h1v1h-1zM55 52h1v1h-1zM56 52h1v1h-1zM58 52h1v1h-1zM59 52h1v1h-1zM60 52h1v1h-1zM8 53h1v1h-1zM10 53h1v1h-1zM11 53h1v1h-1zM12 53h1v1h-1zM14 53h1v1h-1zM19 53h1v1h-1zM22 53h1v1h-1zM23 53h1v1h-1zM25 53h1v1h-1zM26 53h1v1h-1zM28 53h1v1h-1zM32 53h1v1h-1zM36 53h1v1h-1zM41 53h1v1h-1zM43 53h1v1h-1zM44 53h1v1h-1zM45 53h1v1h-1zM46 53h1v1h-1zM48 53h1v1h-1zM51 53h1v1h-1zM52 53h1v1h-1zM56 53h1v1h-1zM57 53h1v1h-1zM58 53h1v1h-1zM60 53h1v1h-1zM0 54h1v1h-1zM1 54h1v1h-1zM2 54h1v1h-1zM3 54h1v1h-1zM4 54h1v1h-1zM5 54h1v1h-1zM6 54h1v1h-1zM8 54h1v1h-1zM12 54h1v1h-1zM13 54h1v1h-1zM14 54h1v1h-1zM16 54h1v1h-1zM17 54h1v1h-1zM18 54h1v1h-1zM19 54h1v1h-1zM20 54h1v1h-1zM21 54h1v1h-1zM22 54h1v1h-1zM23 54h1v1h-1zM24 54h1v1h-1zM25 54h1v1h-1zM28 54h1v1h-1zM30 54h1v1h-1zM32 54h1v1h-1zM34 54h1v1h-1zM36 54h1v1h-1zM37 54h1v1h-1zM38 54h1v1h-1zM40 54h1v1h-1zM43 54h1v1h-1zM44 54h1v1h-1zM47 54h1v1h-1zM48 54h1v1h-1zM51 54h1v1h-1zM52 54h1v1h-1zM54 54h1v1h-1zM56 54h1v1h-1zM57 54h1v1h-1zM60 54h1v1h-1zM0 55h1v1h-1zM6 55h1v1h-1zM8 55h1v1h-1zM10 55h1v1h-1zM12 55h1v1h-1zM13 55h1v1h-1zM14 55h1v1h-1zM15 55h1v1h-1zM17 55h1v1h-1zM18 55h1v1h-1zM19 55h1v1h-1zM21 55h1v1h-1zM22 55h1v1h-1zM23 55h1v1h-1zM24 55h1v1h-1zM25 55h1v1h-1zM28 55h1v1h-1zM32 55h1v1h-1zM36 55h1v1h-1zM38 55h1v1h-1zM39 55h1v1h-1zM40 55h1v1h-1zM41 55h1v1h-1zM43 55h1v1h-1zM45 55h1v1h-1zM48 55h1v1h-1zM52 55h1v1h-1zM56 55h1v1h-1zM57 55h1v1h-1zM0 56h1v1h-1zM2 56h1v1h-1zM3 56h1v1h-1zM4 56h1v1h-1zM6 56h1v1h-1zM11 56h1v1h-1zM14 56h1v1h-1zM16 56h1v1h-1zM17 56h1v1h-1zM18 56h1v1h-1zM21 56h1v1h-1zM24 56h1v1h-1zM28 56h1v1h-1zM29 56h1v1h-1zM30 56h1v1h-1zM31 56h1v1h-1zM32 56h1v1h-1zM37 56h1v1h-1zM40 56h1v1h-1zM41 56h1v1h-1zM42 56h1v1h-1zM43 56h1v1h-1zM46 56h1v1h-1zM47 56h1v1h-1zM52 56h1v1h-1zM53 56h1v1h-1zM54 56h1v1h-1zM55 56h1v1h-1zM56 56h1v1h-1zM57 56h1v1h-1zM58 56h1v1h-1zM0 57h1v1h-1zM2 57h1v1h-1zM3 57h1v1h-1zM4 57h1v1h-1zM6 57h1v1h-1zM8 57h1v1h-1zM9 57h1v1h-1zM11 57h1v1h-1zM13 57h1v1h-1zM16 57h1v1h-1zM17 57h1v1h-1zM20 57h1v1h-1zM21 57h1v1h-1zM23 57h1v1h-1zM24 57h1v1h-1zM26 57h1v1h-1zM28 57h1v1h-1zM29 57h1v1h-1zM30 57h1v1h-1zM35 57h1v1h-1zM37 57h1v1h-1zM41 57h1v1h-1zM42 57h1v1h-1zM48 57h1v1h-1zM49 57h1v1h-1zM51 57h1v1h-1zM52 57h1v1h-1zM56 57h1v1h-1zM60 57h1v1h-1zM0 58h1v1h-1zM2 58h1v1h-1zM3 58h1v1h-1zM4 58h1v1h-1zM6 58h1v1h-1zM8 58h1v1h-1zM9 58h1v1h-1zM10 58h1v1h-1zM13 58h1v1h-1zM14 58h1v1h-1zM17 58h1v1h-1zM18 58h1v1h-1zM19 58h1v1h-1zM21 58h1v1h-1zM22 58h1v1h-1zM26 58h1v1h-1zM27 58h1v1h-1zM29 58h1v1h-1zM31 58h1v1h-1zM32 58h1v1h-1zM37 58h1v1h-1zM38 58h1v1h-1zM39 58h1v1h-1zM40 58h1v1h-1zM41 58h1v1h-1zM42 58h1v1h-1zM44 58h1v1h-1zM46 58h1v1h-1zM51 58h1v1h-1zM53 58h1v1h-1zM54 58h1v1h-1zM55 58h1v1h-1zM56 58h1v1h-1zM57 58h1v1h-1zM58 58h1v1h-1zM59 58h1v1h-1zM0 59h1v1h-1zM6 59h1v1h-1zM10 59h1v1h-1zM11 59h1v1h-1zM13 59h1v1h-1zM14 59h1v1h-1zM16 59h1v1h-1zM18 59h1v1h-1zM19 59h1v1h-1zM21 59h1v1h-1zM22 59h1v1h-1zM23 59h1v1h-1zM30 59h1v1h-1zM31 59h1v1h-1zM32 59h1v1h-1zM33 59h1v1h-1zM36 59h1v1h-1zM38 59h1v1h-1zM42 59h1v1h-1zM43 59h1v1h-1zM45 59h1v1h-1zM46 59h1v1h-1zM47 59h1v1h-1zM49 59h1v1h-1zM50 59h1v1h-1zM53 59h1v1h-1zM55 59h1v1h-1zM56 59h1v1h-1zM57 59h1v1h-1zM58 59h1v1h-1zM0 60h1v1h-1zM1 60h1v1h-1zM2 60h1v1h-1zM3 60h1v1h-1zM4 60h1v1h-1zM5 60h1v1h-1zM6 60h1v1h-1zM8 60h1v1h-1zM11 60h1v1h-1zM13 60h1v1h-1zM17 60h1v1h-1zM18 60h1v1h-1zM19 60h1v1h-1zM21 60h1v1h-1zM22 60h1v1h-1zM23 60h1v1h-1zM24 60h1v1h-1zM29 60h1v1h-1zM30 60h1v1h-1zM31 60h1v1h-1zM33 60h1v1h-1zM35 60h1v1h-1zM36 60h1v1h-1zM38 60h1v1h-1zM43 60h1v1h-1zM45 60h1v1h-1zM47 60h1v1h-1zM48 60h1v1h-1zM49 60h1v1h-1zM52 60h1v1h-1zM54 60h1v1h-1zM55 60h1v1h-1zM57 60h1v1h-1zM59 60h1v1h-1zM60 60h1v1h-1z"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 2: z.B. Anfragen -->
+        <div class="contact-hero" style="margin-top:0;">
+          <div class="contact-glow"></div>
+          <div class="contact-hero-inner">
+            <div class="contact-overline">Ihr Projekt</div>
+            <div class="contact-name" style="font-size:26px; margin-bottom:8px;">Bringen Sie Ihr KI Projekt zum Leben und kommen Sie in den Austausch</div>
+            <div class="contact-org" style="margin-bottom:1.25rem;">Beantworten Sie ein paar fragen und kommen Sie ins Gespräch.</div>
+            <!-- ✏️ Link zum Fragebogen (Microsoft Forms) – derselbe wie im QR-Code -->
+            <a class="contact-email" href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Vx3gLwOnR029y_7Z7t3Jx1FpCmualC5OifxY49Jq6LVUQks4VlVZRFIyVlI1UUZVVVNVN0kyRE1ZVy4u" target="_blank" rel="noopener" style="font-size:15px; padding:11px 22px;">${IC.arrowRight} Zum Fragebogen</a>
+            <div class="qr-slot" style="margin-top:28px; margin-bottom:16px; display:flex; justify-content:center;">
+              <!-- QR-Code zum Fragebogen, als Vektorgrafik eingebettet -->
+              <div style="width:min(100%, 256px); aspect-ratio:1; border-radius:14px; overflow:hidden; background:white;"><svg role="img" aria-label="QR-Code zum Fragebogen" style="display:block;width:100%;height:100%" xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 57 57" shape-rendering="crispEdges"><rect x="-4" y="-4" width="57" height="57" fill="#fff"/><path fill="#000" d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM16 0h1v1h-1zM17 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM22 0h1v1h-1zM24 0h1v1h-1zM27 0h1v1h-1zM30 0h1v1h-1zM31 0h1v1h-1zM32 0h1v1h-1zM34 0h1v1h-1zM35 0h1v1h-1zM40 0h1v1h-1zM42 0h1v1h-1zM43 0h1v1h-1zM44 0h1v1h-1zM45 0h1v1h-1zM46 0h1v1h-1zM47 0h1v1h-1zM48 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM15 1h1v1h-1zM17 1h1v1h-1zM18 1h1v1h-1zM19 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM24 1h1v1h-1zM27 1h1v1h-1zM28 1h1v1h-1zM29 1h1v1h-1zM31 1h1v1h-1zM36 1h1v1h-1zM37 1h1v1h-1zM38 1h1v1h-1zM39 1h1v1h-1zM40 1h1v1h-1zM42 1h1v1h-1zM48 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM9 2h1v1h-1zM10 2h1v1h-1zM11 2h1v1h-1zM15 2h1v1h-1zM18 2h1v1h-1zM21 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM28 2h1v1h-1zM31 2h1v1h-1zM32 2h1v1h-1zM34 2h1v1h-1zM35 2h1v1h-1zM39 2h1v1h-1zM40 2h1v1h-1zM42 2h1v1h-1zM44 2h1v1h-1zM45 2h1v1h-1zM46 2h1v1h-1zM48 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM11 3h1v1h-1zM14 3h1v1h-1zM17 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM23 3h1v1h-1zM27 3h1v1h-1zM28 3h1v1h-1zM29 3h1v1h-1zM30 3h1v1h-1zM32 3h1v1h-1zM34 3h1v1h-1zM35 3h1v1h-1zM36 3h1v1h-1zM37 3h1v1h-1zM39 3h1v1h-1zM42 3h1v1h-1zM44 3h1v1h-1zM45 3h1v1h-1zM46 3h1v1h-1zM48 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM10 4h1v1h-1zM15 4h1v1h-1zM16 4h1v1h-1zM17 4h1v1h-1zM19 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM23 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM29 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM37 4h1v1h-1zM42 4h1v1h-1zM44 4h1v1h-1zM45 4h1v1h-1zM46 4h1v1h-1zM48 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM14 5h1v1h-1zM15 5h1v1h-1zM20 5h1v1h-1zM21 5h1v1h-1zM22 5h1v1h-1zM26 5h1v1h-1zM28 5h1v1h-1zM34 5h1v1h-1zM35 5h1v1h-1zM36 5h1v1h-1zM37 5h1v1h-1zM38 5h1v1h-1zM42 5h1v1h-1zM48 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM34 6h1v1h-1zM36 6h1v1h-1zM38 6h1v1h-1zM40 6h1v1h-1zM42 6h1v1h-1zM43 6h1v1h-1zM44 6h1v1h-1zM45 6h1v1h-1zM46 6h1v1h-1zM47 6h1v1h-1zM48 6h1v1h-1zM8 7h1v1h-1zM9 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM14 7h1v1h-1zM15 7h1v1h-1zM16 7h1v1h-1zM19 7h1v1h-1zM20 7h1v1h-1zM22 7h1v1h-1zM26 7h1v1h-1zM27 7h1v1h-1zM30 7h1v1h-1zM31 7h1v1h-1zM32 7h1v1h-1zM33 7h1v1h-1zM34 7h1v1h-1zM35 7h1v1h-1zM37 7h1v1h-1zM39 7h1v1h-1zM40 7h1v1h-1zM0 8h1v1h-1zM6 8h1v1h-1zM8 8h1v1h-1zM11 8h1v1h-1zM14 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM26 8h1v1h-1zM29 8h1v1h-1zM34 8h1v1h-1zM36 8h1v1h-1zM37 8h1v1h-1zM41 8h1v1h-1zM42 8h1v1h-1zM45 8h1v1h-1zM46 8h1v1h-1zM47 8h1v1h-1zM0 9h1v1h-1zM2 9h1v1h-1zM3 9h1v1h-1zM8 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM25 9h1v1h-1zM26 9h1v1h-1zM29 9h1v1h-1zM30 9h1v1h-1zM32 9h1v1h-1zM33 9h1v1h-1zM34 9h1v1h-1zM36 9h1v1h-1zM38 9h1v1h-1zM39 9h1v1h-1zM40 9h1v1h-1zM41 9h1v1h-1zM42 9h1v1h-1zM47 9h1v1h-1zM0 10h1v1h-1zM1 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM19 10h1v1h-1zM21 10h1v1h-1zM22 10h1v1h-1zM23 10h1v1h-1zM25 10h1v1h-1zM26 10h1v1h-1zM28 10h1v1h-1zM32 10h1v1h-1zM33 10h1v1h-1zM34 10h1v1h-1zM38 10h1v1h-1zM39 10h1v1h-1zM40 10h1v1h-1zM41 10h1v1h-1zM42 10h1v1h-1zM44 10h1v1h-1zM45 10h1v1h-1zM46 10h1v1h-1zM47 10h1v1h-1zM48 10h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM18 11h1v1h-1zM20 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM24 11h1v1h-1zM28 11h1v1h-1zM29 11h1v1h-1zM30 11h1v1h-1zM32 11h1v1h-1zM34 11h1v1h-1zM37 11h1v1h-1zM38 11h1v1h-1zM39 11h1v1h-1zM40 11h1v1h-1zM45 11h1v1h-1zM47 11h1v1h-1zM1 12h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM11 12h1v1h-1zM12 12h1v1h-1zM13 12h1v1h-1zM17 12h1v1h-1zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h1v1h-1zM25 12h1v1h-1zM28 12h1v1h-1zM29 12h1v1h-1zM32 12h1v1h-1zM33 12h1v1h-1zM34 12h1v1h-1zM36 12h1v1h-1zM37 12h1v1h-1zM38 12h1v1h-1zM39 12h1v1h-1zM41 12h1v1h-1zM44 12h1v1h-1zM47 12h1v1h-1zM48 12h1v1h-1zM0 13h1v1h-1zM3 13h1v1h-1zM4 13h1v1h-1zM7 13h1v1h-1zM8 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM18 13h1v1h-1zM24 13h1v1h-1zM27 13h1v1h-1zM28 13h1v1h-1zM29 13h1v1h-1zM30 13h1v1h-1zM31 13h1v1h-1zM33 13h1v1h-1zM35 13h1v1h-1zM37 13h1v1h-1zM39 13h1v1h-1zM42 13h1v1h-1zM46 13h1v1h-1zM47 13h1v1h-1zM2 14h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM7 14h1v1h-1zM10 14h1v1h-1zM11 14h1v1h-1zM16 14h1v1h-1zM19 14h1v1h-1zM23 14h1v1h-1zM25 14h1v1h-1zM26 14h1v1h-1zM28 14h1v1h-1zM30 14h1v1h-1zM31 14h1v1h-1zM32 14h1v1h-1zM36 14h1v1h-1zM47 14h1v1h-1zM48 14h1v1h-1zM0 15h1v1h-1zM3 15h1v1h-1zM4 15h1v1h-1zM8 15h1v1h-1zM10 15h1v1h-1zM11 15h1v1h-1zM12 15h1v1h-1zM14 15h1v1h-1zM17 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM23 15h1v1h-1zM26 15h1v1h-1zM27 15h1v1h-1zM28 15h1v1h-1zM29 15h1v1h-1zM30 15h1v1h-1zM31 15h1v1h-1zM33 15h1v1h-1zM34 15h1v1h-1zM35 15h1v1h-1zM36 15h1v1h-1zM37 15h1v1h-1zM38 15h1v1h-1zM40 15h1v1h-1zM41 15h1v1h-1zM42 15h1v1h-1zM46 15h1v1h-1zM48 15h1v1h-1zM0 16h1v1h-1zM1 16h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM5 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM11 16h1v1h-1zM13 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM23 16h1v1h-1zM24 16h1v1h-1zM25 16h1v1h-1zM26 16h1v1h-1zM27 16h1v1h-1zM29 16h1v1h-1zM30 16h1v1h-1zM35 16h1v1h-1zM36 16h1v1h-1zM38 16h1v1h-1zM39 16h1v1h-1zM40 16h1v1h-1zM41 16h1v1h-1zM42 16h1v1h-1zM43 16h1v1h-1zM46 16h1v1h-1zM1 17h1v1h-1zM2 17h1v1h-1zM9 17h1v1h-1zM10 17h1v1h-1zM11 17h1v1h-1zM12 17h1v1h-1zM13 17h1v1h-1zM14 17h1v1h-1zM15 17h1v1h-1zM19 17h1v1h-1zM21 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM27 17h1v1h-1zM30 17h1v1h-1zM31 17h1v1h-1zM35 17h1v1h-1zM36 17h1v1h-1zM37 17h1v1h-1zM39 17h1v1h-1zM41 17h1v1h-1zM42 17h1v1h-1zM43 17h1v1h-1zM44 17h1v1h-1zM45 17h1v1h-1zM48 17h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM17 18h1v1h-1zM20 18h1v1h-1zM23 18h1v1h-1zM27 18h1v1h-1zM28 18h1v1h-1zM29 18h1v1h-1zM30 18h1v1h-1zM31 18h1v1h-1zM35 18h1v1h-1zM37 18h1v1h-1zM38 18h1v1h-1zM42 18h1v1h-1zM43 18h1v1h-1zM44 18h1v1h-1zM45 18h1v1h-1zM46 18h1v1h-1zM48 18h1v1h-1zM0 19h1v1h-1zM1 19h1v1h-1zM2 19h1v1h-1zM4 19h1v1h-1zM7 19h1v1h-1zM8 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM15 19h1v1h-1zM16 19h1v1h-1zM17 19h1v1h-1zM20 19h1v1h-1zM21 19h1v1h-1zM28 19h1v1h-1zM30 19h1v1h-1zM31 19h1v1h-1zM32 19h1v1h-1zM33 19h1v1h-1zM34 19h1v1h-1zM39 19h1v1h-1zM42 19h1v1h-1zM43 19h1v1h-1zM44 19h1v1h-1zM45 19h1v1h-1zM48 19h1v1h-1zM1 20h1v1h-1zM2 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM11 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM14 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM24 20h1v1h-1zM25 20h1v1h-1zM29 20h1v1h-1zM31 20h1v1h-1zM34 20h1v1h-1zM35 20h1v1h-1zM36 20h1v1h-1zM38 20h1v1h-1zM39 20h1v1h-1zM40 20h1v1h-1zM41 20h1v1h-1zM46 20h1v1h-1zM47 20h1v1h-1zM4 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM15 21h1v1h-1zM16 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM19 21h1v1h-1zM20 21h1v1h-1zM21 21h1v1h-1zM24 21h1v1h-1zM26 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM29 21h1v1h-1zM30 21h1v1h-1zM33 21h1v1h-1zM34 21h1v1h-1zM35 21h1v1h-1zM36 21h1v1h-1zM37 21h1v1h-1zM38 21h1v1h-1zM39 21h1v1h-1zM40 21h1v1h-1zM41 21h1v1h-1zM42 21h1v1h-1zM43 21h1v1h-1zM46 21h1v1h-1zM48 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM7 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM15 22h1v1h-1zM16 22h1v1h-1zM17 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM25 22h1v1h-1zM26 22h1v1h-1zM27 22h1v1h-1zM29 22h1v1h-1zM32 22h1v1h-1zM34 22h1v1h-1zM38 22h1v1h-1zM39 22h1v1h-1zM40 22h1v1h-1zM41 22h1v1h-1zM42 22h1v1h-1zM43 22h1v1h-1zM44 22h1v1h-1zM45 22h1v1h-1zM47 22h1v1h-1zM48 22h1v1h-1zM3 23h1v1h-1zM4 23h1v1h-1zM8 23h1v1h-1zM9 23h1v1h-1zM10 23h1v1h-1zM12 23h1v1h-1zM13 23h1v1h-1zM14 23h1v1h-1zM15 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h1v1h-1zM22 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM29 23h1v1h-1zM30 23h1v1h-1zM31 23h1v1h-1zM32 23h1v1h-1zM34 23h1v1h-1zM35 23h1v1h-1zM37 23h1v1h-1zM38 23h1v1h-1zM39 23h1v1h-1zM40 23h1v1h-1zM44 23h1v1h-1zM45 23h1v1h-1zM47 23h1v1h-1zM1 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM9 24h1v1h-1zM10 24h1v1h-1zM11 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM18 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM28 24h1v1h-1zM32 24h1v1h-1zM34 24h1v1h-1zM36 24h1v1h-1zM37 24h1v1h-1zM40 24h1v1h-1zM42 24h1v1h-1zM44 24h1v1h-1zM45 24h1v1h-1zM47 24h1v1h-1zM48 24h1v1h-1zM1 25h1v1h-1zM4 25h1v1h-1zM8 25h1v1h-1zM9 25h1v1h-1zM12 25h1v1h-1zM13 25h1v1h-1zM16 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM22 25h1v1h-1zM26 25h1v1h-1zM27 25h1v1h-1zM28 25h1v1h-1zM29 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM33 25h1v1h-1zM36 25h1v1h-1zM37 25h1v1h-1zM40 25h1v1h-1zM44 25h1v1h-1zM46 25h1v1h-1zM47 25h1v1h-1zM1 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM5 26h1v1h-1zM6 26h1v1h-1zM7 26h1v1h-1zM8 26h1v1h-1zM10 26h1v1h-1zM11 26h1v1h-1zM13 26h1v1h-1zM14 26h1v1h-1zM15 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM20 26h1v1h-1zM22 26h1v1h-1zM23 26h1v1h-1zM24 26h1v1h-1zM25 26h1v1h-1zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h1v1h-1zM31 26h1v1h-1zM33 26h1v1h-1zM34 26h1v1h-1zM36 26h1v1h-1zM38 26h1v1h-1zM39 26h1v1h-1zM40 26h1v1h-1zM41 26h1v1h-1zM42 26h1v1h-1zM43 26h1v1h-1zM44 26h1v1h-1zM45 26h1v1h-1zM47 26h1v1h-1zM48 26h1v1h-1zM1 27h1v1h-1zM3 27h1v1h-1zM4 27h1v1h-1zM11 27h1v1h-1zM12 27h1v1h-1zM19 27h1v1h-1zM21 27h1v1h-1zM24 27h1v1h-1zM25 27h1v1h-1zM26 27h1v1h-1zM29 27h1v1h-1zM38 27h1v1h-1zM44 27h1v1h-1zM46 27h1v1h-1zM47 27h1v1h-1zM48 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM3 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM13 28h1v1h-1zM16 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM23 28h1v1h-1zM24 28h1v1h-1zM25 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM35 28h1v1h-1zM36 28h1v1h-1zM37 28h1v1h-1zM38 28h1v1h-1zM39 28h1v1h-1zM41 28h1v1h-1zM42 28h1v1h-1zM43 28h1v1h-1zM46 28h1v1h-1zM47 28h1v1h-1zM48 28h1v1h-1zM2 29h1v1h-1zM3 29h1v1h-1zM7 29h1v1h-1zM8 29h1v1h-1zM10 29h1v1h-1zM12 29h1v1h-1zM18 29h1v1h-1zM19 29h1v1h-1zM20 29h1v1h-1zM24 29h1v1h-1zM27 29h1v1h-1zM28 29h1v1h-1zM29 29h1v1h-1zM30 29h1v1h-1zM32 29h1v1h-1zM39 29h1v1h-1zM40 29h1v1h-1zM43 29h1v1h-1zM0 30h1v1h-1zM1 30h1v1h-1zM2 30h1v1h-1zM3 30h1v1h-1zM5 30h1v1h-1zM6 30h1v1h-1zM7 30h1v1h-1zM10 30h1v1h-1zM12 30h1v1h-1zM15 30h1v1h-1zM16 30h1v1h-1zM19 30h1v1h-1zM21 30h1v1h-1zM24 30h1v1h-1zM25 30h1v1h-1zM26 30h1v1h-1zM27 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM39 30h1v1h-1zM40 30h1v1h-1zM42 30h1v1h-1zM44 30h1v1h-1zM46 30h1v1h-1zM48 30h1v1h-1zM0 31h1v1h-1zM2 31h1v1h-1zM4 31h1v1h-1zM9 31h1v1h-1zM10 31h1v1h-1zM11 31h1v1h-1zM14 31h1v1h-1zM15 31h1v1h-1zM16 31h1v1h-1zM17 31h1v1h-1zM19 31h1v1h-1zM20 31h1v1h-1zM21 31h1v1h-1zM22 31h1v1h-1zM24 31h1v1h-1zM26 31h1v1h-1zM29 31h1v1h-1zM31 31h1v1h-1zM32 31h1v1h-1zM35 31h1v1h-1zM37 31h1v1h-1zM38 31h1v1h-1zM39 31h1v1h-1zM40 31h1v1h-1zM41 31h1v1h-1zM42 31h1v1h-1zM43 31h1v1h-1zM45 31h1v1h-1zM47 31h1v1h-1zM48 31h1v1h-1zM0 32h1v1h-1zM2 32h1v1h-1zM5 32h1v1h-1zM6 32h1v1h-1zM8 32h1v1h-1zM9 32h1v1h-1zM12 32h1v1h-1zM13 32h1v1h-1zM18 32h1v1h-1zM22 32h1v1h-1zM28 32h1v1h-1zM31 32h1v1h-1zM35 32h1v1h-1zM36 32h1v1h-1zM38 32h1v1h-1zM39 32h1v1h-1zM40 32h1v1h-1zM41 32h1v1h-1zM43 32h1v1h-1zM44 32h1v1h-1zM0 33h1v1h-1zM1 33h1v1h-1zM3 33h1v1h-1zM4 33h1v1h-1zM7 33h1v1h-1zM8 33h1v1h-1zM10 33h1v1h-1zM15 33h1v1h-1zM17 33h1v1h-1zM18 33h1v1h-1zM19 33h1v1h-1zM20 33h1v1h-1zM21 33h1v1h-1zM22 33h1v1h-1zM23 33h1v1h-1zM24 33h1v1h-1zM26 33h1v1h-1zM29 33h1v1h-1zM33 33h1v1h-1zM34 33h1v1h-1zM35 33h1v1h-1zM38 33h1v1h-1zM41 33h1v1h-1zM43 33h1v1h-1zM44 33h1v1h-1zM45 33h1v1h-1zM46 33h1v1h-1zM6 34h1v1h-1zM9 34h1v1h-1zM10 34h1v1h-1zM12 34h1v1h-1zM14 34h1v1h-1zM20 34h1v1h-1zM21 34h1v1h-1zM22 34h1v1h-1zM28 34h1v1h-1zM30 34h1v1h-1zM31 34h1v1h-1zM37 34h1v1h-1zM38 34h1v1h-1zM39 34h1v1h-1zM42 34h1v1h-1zM44 34h1v1h-1zM45 34h1v1h-1zM47 34h1v1h-1zM48 34h1v1h-1zM1 35h1v1h-1zM4 35h1v1h-1zM8 35h1v1h-1zM9 35h1v1h-1zM10 35h1v1h-1zM11 35h1v1h-1zM13 35h1v1h-1zM14 35h1v1h-1zM15 35h1v1h-1zM16 35h1v1h-1zM19 35h1v1h-1zM23 35h1v1h-1zM24 35h1v1h-1zM25 35h1v1h-1zM26 35h1v1h-1zM27 35h1v1h-1zM30 35h1v1h-1zM33 35h1v1h-1zM37 35h1v1h-1zM38 35h1v1h-1zM39 35h1v1h-1zM40 35h1v1h-1zM43 35h1v1h-1zM45 35h1v1h-1zM1 36h1v1h-1zM2 36h1v1h-1zM3 36h1v1h-1zM4 36h1v1h-1zM6 36h1v1h-1zM9 36h1v1h-1zM11 36h1v1h-1zM12 36h1v1h-1zM15 36h1v1h-1zM17 36h1v1h-1zM21 36h1v1h-1zM26 36h1v1h-1zM28 36h1v1h-1zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h1v1h-1zM36 36h1v1h-1zM38 36h1v1h-1zM39 36h1v1h-1zM41 36h1v1h-1zM42 36h1v1h-1zM48 36h1v1h-1zM7 37h1v1h-1zM8 37h1v1h-1zM10 37h1v1h-1zM12 37h1v1h-1zM14 37h1v1h-1zM15 37h1v1h-1zM22 37h1v1h-1zM24 37h1v1h-1zM27 37h1v1h-1zM29 37h1v1h-1zM30 37h1v1h-1zM31 37h1v1h-1zM33 37h1v1h-1zM35 37h1v1h-1zM37 37h1v1h-1zM42 37h1v1h-1zM43 37h1v1h-1zM45 37h1v1h-1zM46 37h1v1h-1zM47 37h1v1h-1zM1 38h1v1h-1zM5 38h1v1h-1zM6 38h1v1h-1zM9 38h1v1h-1zM11 38h1v1h-1zM16 38h1v1h-1zM17 38h1v1h-1zM20 38h1v1h-1zM22 38h1v1h-1zM25 38h1v1h-1zM32 38h1v1h-1zM33 38h1v1h-1zM34 38h1v1h-1zM35 38h1v1h-1zM37 38h1v1h-1zM38 38h1v1h-1zM39 38h1v1h-1zM41 38h1v1h-1zM42 38h1v1h-1zM44 38h1v1h-1zM46 38h1v1h-1zM48 38h1v1h-1zM1 39h1v1h-1zM2 39h1v1h-1zM3 39h1v1h-1zM7 39h1v1h-1zM8 39h1v1h-1zM9 39h1v1h-1zM12 39h1v1h-1zM15 39h1v1h-1zM16 39h1v1h-1zM17 39h1v1h-1zM24 39h1v1h-1zM25 39h1v1h-1zM26 39h1v1h-1zM28 39h1v1h-1zM29 39h1v1h-1zM31 39h1v1h-1zM32 39h1v1h-1zM33 39h1v1h-1zM34 39h1v1h-1zM35 39h1v1h-1zM38 39h1v1h-1zM39 39h1v1h-1zM43 39h1v1h-1zM45 39h1v1h-1zM46 39h1v1h-1zM48 39h1v1h-1zM0 40h1v1h-1zM1 40h1v1h-1zM2 40h1v1h-1zM6 40h1v1h-1zM7 40h1v1h-1zM11 40h1v1h-1zM12 40h1v1h-1zM14 40h1v1h-1zM15 40h1v1h-1zM18 40h1v1h-1zM20 40h1v1h-1zM22 40h1v1h-1zM23 40h1v1h-1zM24 40h1v1h-1zM25 40h1v1h-1zM26 40h1v1h-1zM30 40h1v1h-1zM31 40h1v1h-1zM33 40h1v1h-1zM35 40h1v1h-1zM36 40h1v1h-1zM37 40h1v1h-1zM39 40h1v1h-1zM40 40h1v1h-1zM41 40h1v1h-1zM42 40h1v1h-1zM43 40h1v1h-1zM44 40h1v1h-1zM45 40h1v1h-1zM46 40h1v1h-1zM47 40h1v1h-1zM48 40h1v1h-1zM8 41h1v1h-1zM9 41h1v1h-1zM10 41h1v1h-1zM12 41h1v1h-1zM18 41h1v1h-1zM21 41h1v1h-1zM22 41h1v1h-1zM26 41h1v1h-1zM27 41h1v1h-1zM28 41h1v1h-1zM29 41h1v1h-1zM30 41h1v1h-1zM31 41h1v1h-1zM35 41h1v1h-1zM37 41h1v1h-1zM39 41h1v1h-1zM40 41h1v1h-1zM44 41h1v1h-1zM0 42h1v1h-1zM1 42h1v1h-1zM2 42h1v1h-1zM3 42h1v1h-1zM4 42h1v1h-1zM5 42h1v1h-1zM6 42h1v1h-1zM10 42h1v1h-1zM11 42h1v1h-1zM17 42h1v1h-1zM22 42h1v1h-1zM24 42h1v1h-1zM26 42h1v1h-1zM28 42h1v1h-1zM35 42h1v1h-1zM36 42h1v1h-1zM40 42h1v1h-1zM42 42h1v1h-1zM44 42h1v1h-1zM46 42h1v1h-1zM48 42h1v1h-1zM0 43h1v1h-1zM6 43h1v1h-1zM14 43h1v1h-1zM17 43h1v1h-1zM22 43h1v1h-1zM26 43h1v1h-1zM27 43h1v1h-1zM28 43h1v1h-1zM29 43h1v1h-1zM30 43h1v1h-1zM32 43h1v1h-1zM33 43h1v1h-1zM37 43h1v1h-1zM39 43h1v1h-1zM40 43h1v1h-1zM44 43h1v1h-1zM45 43h1v1h-1zM0 44h1v1h-1zM2 44h1v1h-1zM3 44h1v1h-1zM4 44h1v1h-1zM6 44h1v1h-1zM9 44h1v1h-1zM12 44h1v1h-1zM15 44h1v1h-1zM17 44h1v1h-1zM18 44h1v1h-1zM19 44h1v1h-1zM22 44h1v1h-1zM23 44h1v1h-1zM24 44h1v1h-1zM25 44h1v1h-1zM26 44h1v1h-1zM33 44h1v1h-1zM36 44h1v1h-1zM37 44h1v1h-1zM40 44h1v1h-1zM41 44h1v1h-1zM42 44h1v1h-1zM43 44h1v1h-1zM44 44h1v1h-1zM45 44h1v1h-1zM48 44h1v1h-1zM0 45h1v1h-1zM2 45h1v1h-1zM3 45h1v1h-1zM4 45h1v1h-1zM6 45h1v1h-1zM12 45h1v1h-1zM13 45h1v1h-1zM15 45h1v1h-1zM16 45h1v1h-1zM20 45h1v1h-1zM21 45h1v1h-1zM22 45h1v1h-1zM23 45h1v1h-1zM24 45h1v1h-1zM25 45h1v1h-1zM27 45h1v1h-1zM29 45h1v1h-1zM30 45h1v1h-1zM32 45h1v1h-1zM34 45h1v1h-1zM35 45h1v1h-1zM37 45h1v1h-1zM38 45h1v1h-1zM39 45h1v1h-1zM40 45h1v1h-1zM41 45h1v1h-1zM43 45h1v1h-1zM45 45h1v1h-1zM46 45h1v1h-1zM48 45h1v1h-1zM0 46h1v1h-1zM2 46h1v1h-1zM3 46h1v1h-1zM4 46h1v1h-1zM6 46h1v1h-1zM9 46h1v1h-1zM12 46h1v1h-1zM14 46h1v1h-1zM15 46h1v1h-1zM17 46h1v1h-1zM19 46h1v1h-1zM21 46h1v1h-1zM23 46h1v1h-1zM24 46h1v1h-1zM26 46h1v1h-1zM28 46h1v1h-1zM29 46h1v1h-1zM30 46h1v1h-1zM31 46h1v1h-1zM34 46h1v1h-1zM36 46h1v1h-1zM41 46h1v1h-1zM42 46h1v1h-1zM43 46h1v1h-1zM0 47h1v1h-1zM6 47h1v1h-1zM9 47h1v1h-1zM11 47h1v1h-1zM12 47h1v1h-1zM17 47h1v1h-1zM18 47h1v1h-1zM22 47h1v1h-1zM23 47h1v1h-1zM25 47h1v1h-1zM26 47h1v1h-1zM27 47h1v1h-1zM30 47h1v1h-1zM31 47h1v1h-1zM34 47h1v1h-1zM40 47h1v1h-1zM41 47h1v1h-1zM42 47h1v1h-1zM45 47h1v1h-1zM48 47h1v1h-1zM0 48h1v1h-1zM1 48h1v1h-1zM2 48h1v1h-1zM3 48h1v1h-1zM4 48h1v1h-1zM5 48h1v1h-1zM6 48h1v1h-1zM8 48h1v1h-1zM16 48h1v1h-1zM17 48h1v1h-1zM18 48h1v1h-1zM19 48h1v1h-1zM20 48h1v1h-1zM22 48h1v1h-1zM25 48h1v1h-1zM26 48h1v1h-1zM27 48h1v1h-1zM28 48h1v1h-1zM30 48h1v1h-1zM32 48h1v1h-1zM33 48h1v1h-1zM36 48h1v1h-1zM37 48h1v1h-1zM38 48h1v1h-1zM40 48h1v1h-1zM43 48h1v1h-1zM44 48h1v1h-1zM46 48h1v1h-1zM48 48h1v1h-1z"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ✏️ FINALE: Den Satz hier ändern (ohne Fragezeichen – das kommt automatisch in Gold dahinter) -->
+      ${((sentence) => `
+      <div class="finale">
+        <div class="finale-inner">
+          <span class="finale-sparks">${[...Array(16)].map((_, i) =>
+            `<i style="--x:${(i * 37 + 7) % 100}%; --s:${3 + i % 3}px; --t:${2.6 + (i % 4) * 0.5}s; --d:${(i * 0.43) % 3}s"></i>`).join('')}</span>
+          <div class="finale-text">${sentence.split(' ').map((word, i) =>
+            `<span class="finale-word" style="--i:${i}">${word}</span>`).join(' ')}<span class="finale-q" style="--i:${sentence.split(' ').length}">?<i></i><i></i></span></div>
+        </div>
+      </div>`)('Sind Sie bereit, den ersten Schritt zu gehen')}
+            `
+            },
+
+        ]; // ← Ende der Phasen-Liste – hier nichts löschen!
+
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ✏️ MEILENSTEINE DER HISTORIE (gehört zum Baustein "Klick-Anleitung" in Phase 2)
+        //   Jeder Block { ... } ist ein Schritt:
+        //     year   → Jahreszahl in der Zeitleiste oben
+        //     title  → Überschrift des Schritts
+        //     desc   → Beschreibung (HTML erlaubt: <strong>, <br>, <a href='...'>)
+        //     tip    → grüner Hinweis-Kasten unter dem Schritt
+        //     visual → Name der Animation rechts (siehe "historyVisuals" darunter)
+        // ═══════════════════════════════════════════════════════════════════════════
+        const stepperSteps = [
+            {year: '1956', visual: 'computer', title: 'Die Geburtsstunde der KI',
+                desc: 'Ein Sommer in Dartmouth (USA): Forscher um John McCarthy treffen sich mit einer kühnen Annahme – <strong>jeder Aspekt von Lernen und Intelligenz</strong> lässt sich so genau beschreiben, dass eine Maschine ihn nachahmen kann.',
+                tip: 'Der Begriff „Künstliche Intelligenz“ ist geboren. Die Vorarbeit kam von Alan Turing: „Können Maschinen denken?“ (1950)'},
+            {year: '1997', visual: 'chess', title: 'Maschine schlägt Weltmeister',
+                desc: 'IBMs Schachcomputer <strong>Deep Blue</strong> besiegt Weltmeister Garri Kasparow. Er berechnet rund <strong>200 Millionen Stellungen pro Sekunde</strong>.',
+                tip: 'Zum ersten Mal schlägt eine Maschine den besten Menschen in seiner Paradedisziplin.'},
+            {year: '2016', visual: 'go', title: 'KI entwickelt Intuition',
+                desc: 'Googles <strong>AlphaGo</strong> schlägt Go-Legende Lee Sedol 4 : 1. Go hat mehr mögliche Stellungen, als es Atome im Universum gibt – Durchrechnen ist unmöglich. AlphaGo hat aus Millionen Partien <strong>selbst gelernt</strong>.',
+                tip: 'Zug 37: Ein Zug, den kein Mensch gespielt hätte. Experten hielten ihn erst für einen Fehler – dann für genial.'},
+            {year: '2022', visual: 'growth', title: 'ChatGPT – KI für alle',
+                desc: 'Am 30. November 2022 erscheint <strong>ChatGPT</strong>. Plötzlich kann jeder mit einer KI sprechen – ohne Vorwissen, einfach in normaler Sprache.',
+                tip: '100 Millionen Nutzer in nur 2 Monaten – die bis dahin am schnellsten wachsende App aller Zeiten.'},
+            {year: 'Heute', visual: 'buzz', title: 'KI ist überall',
+                desc: 'KI schreibt, programmiert, malt, spricht – und handelt zunehmend <strong>selbstständig</strong>. Aus Chatbots werden Agenten, die ganze Aufgaben erledigen.',
+                tip: 'Die Frage ist nicht mehr, ob KI kommt – sondern wie wir sie sinnvoll einsetzen.'},
+        ];
+
+        // ✏️ Begriffe, die beim letzten Schritt aufploppen: [ Text, Stil ('big', 'gold' oder '') ]
+        const buzzwords = [
+            ['KI-Agenten', 'big'], ['Multimodal', ''], ['Copilot', 'gold'], ['Reasoning', ''], ['Vibe Coding', ''],
+            ['RAG', ''], ['Agentic AI', 'big'], ['EU AI Act', 'gold'], ['Humanoide Roboter', ''], ['Deepfakes', ''],
+            ['MCP', ''], ['Generative KI', 'big'], ['Souveräne KI', 'gold'], ['AGI?', 'big'],
+        ];
+
+        // Animationen rechts neben dem Text – nur anpassen, wenn du weißt, was du tust
+        const historyVisuals = {
+            computer: () => `
+                <svg class="vis-computer vis-pop" viewBox="0 0 240 180">
+                  <rect x="20" y="8" width="200" height="164" rx="12" fill="#3D008D"/>
+                  ${[80, 160].map((x, i) => `
+                    <g class="reel ${i ? 'rev' : ''}">
+                      <circle cx="${x}" cy="58" r="32" fill="#EBEBFD"/>
+                      <circle cx="${x}" cy="58" r="9" fill="#3D008D"/>
+                      <path d="M${x} 30v16M${x} 70v16M${x - 28} 58h16M${x + 12} 58h16" stroke="#8B6FD8" stroke-width="5" stroke-linecap="round"/>
+                    </g>`).join('')}
+                  ${[0, 1].map(r => [...Array(8)].map((_, c) =>
+                    `<circle class="lamp" cx="${50 + c * 20}" cy="${116 + r * 20}" r="5.5" fill="#6900F4" style="animation-delay:${((c * 7 + r * 3) % 10) * 0.14}s"/>`).join('')).join('')}
+                  <rect x="40" y="154" width="160" height="6" rx="3" fill="#8B6FD8"/>
+                </svg>
+                <div class="vis-caption">Dartmouth College, Sommer 1956</div>`,
+
+            chess: () => {
+                const pieces = {'2-2': '♛', '1-6': '♜', '3-6': '♞', '5-1': '♝', '3-3': '♟', '2-5': '♟'};
+                return `
+                <div class="vis-chess vis-pop">
+                  ${[...Array(64)].map((_, i) => {
+                    const r = Math.floor(i / 8), c = i % 8, key = r + '-' + c;
+                    const piece = key === '4-4' ? '<span class="king-falls">♔︎</span>' : (pieces[key] ? pieces[key] + '︎' : '');
+                    return `<div class="${(r + c) % 2 ? 'dark' : ''}">${piece}</div>`;
+                  }).join('')}
+                </div>
+                <div class="vis-score">Deep Blue 3½ : 2½ Kasparow</div>`;
+            },
+
+            go: () => {
+                const stones = [[2, 2, 0], [6, 2, 1], [2, 6, 1], [6, 6, 0], [3, 3, 1], [5, 5, 0], [2, 5, 0], [6, 3, 1], [4, 6, 1], [3, 6, 0]];
+                const p = n => 20 + n * 20;
+                return `
+                <svg class="vis-go vis-pop" viewBox="0 0 200 200">
+                  <rect width="200" height="200" rx="12" fill="#E3B873"/>
+                  ${[...Array(9)].map((_, i) => `<path d="M20 ${p(i)}H180M${p(i)} 20V180" stroke="#7A5420" stroke-width="1.2"/>`).join('')}
+                  ${stones.map(([c, r, w], i) => `<circle class="stone" cx="${p(c)}" cy="${p(r)}" r="8.5" fill="${w ? '#FFFFFF' : '#050520'}" stroke="#050520" stroke-width="${w ? 1 : 0}" style="animation-delay:${0.15 + i * 0.1}s"/>`).join('')}
+                  <circle class="move37-ring" cx="${p(5)}" cy="${p(2)}" r="10" fill="none" stroke="#0000F5" stroke-width="3"/>
+                  <circle class="stone" cx="${p(5)}" cy="${p(2)}" r="8.5" fill="#050520" stroke="#0000F5" stroke-width="2.5" style="animation-delay:1.4s"/>
+                </svg>
+                <div class="vis-caption">AlphaGo 4 : 1 Lee Sedol – mit dem legendären Zug 37</div>`;
+            },
+
+            growth: () => `
+                <div class="vis-caption">Zeit bis 100 Millionen Nutzer</div>
+                <div class="vis-growth">
+                  ${[['Telefon', '75 Jahre', 900], ['Internet', '7 Jahre', 84], ['Facebook', '4,5 Jahre', 54],
+                     ['Instagram', '2,5 Jahre', 30], ['TikTok', '9 Monate', 9], ['ChatGPT', '2 Monate', 2]]
+                    .map(([name, time, months], i) => `
+                    <div class="vis-growth-row ${name === 'ChatGPT' ? 'hot' : ''}">
+                      <span>${name}</span>
+                      <div><div class="bar" style="--w:${months / 900 * 100}%; --i:${i}"></div></div>
+                      <b>${time}</b>
+                    </div>`).join('')}
+                </div>`,
+
+            buzz: () => `
+                <div class="buzz-cloud">
+                  ${buzzwords.map(([word, style], i) =>
+                    `<span class="buzz ${style}" style="animation-delay:${i * 0.14}s, ${0.6 + i * 0.14 + (i % 4) * 0.35}s">${word}</span>`).join('')}
+                </div>`,
+        };
+
+        let stepperIdx = 0;
+
+        function renderStepper() {
+            const bar = document.getElementById('stepperBar');
+            if (!bar) return; // Kein Stepper auf der Seite → nichts tun
+            const timeline = document.getElementById('stepperTimeline');
+            const body = document.getElementById('stepperBody');
+            const back = document.getElementById('stepperBack');
+            const next = document.getElementById('stepperNext');
+            const last = stepperSteps.length - 1;
+            bar.style.width = ((stepperIdx + 1) / stepperSteps.length * 100) + '%';
+            timeline.innerHTML = stepperSteps.map((s, i) => `
+              ${i ? `<span class="tl-line ${i <= stepperIdx ? 'past' : ''}"></span>` : ''}
+              <button class="tl-node ${i < stepperIdx ? 'past' : ''} ${i === stepperIdx ? 'active' : ''}" onclick="stepperTo(${i})">
+                <span class="tl-dot"></span>${s.year}
+              </button>`).join('');
+            const step = stepperSteps[stepperIdx];
+            body.innerHTML = `<div class="stepper-grid">
+      <div>
+        <div class="stepper-step-title"><div class="stepper-step-num">${stepperIdx + 1}</div>${step.title}</div>
+        <div class="stepper-step-desc">${step.desc}</div>
+        <div class="stepper-tip">${IC.zap} ${step.tip}</div>
+      </div>
+      <div class="stepper-visual">${historyVisuals[step.visual]()}</div>
+    </div>`;
+            back.disabled = stepperIdx === 0;
+            next.disabled = stepperIdx === last;
+            next.textContent = stepperIdx === last ? '✓ Geschafft' : 'Nächster Meilenstein →'; // ✏️ Button-Texte
+        }
+
+        function stepperTo(idx) {
+            stepperIdx = Math.max(0, Math.min(stepperSteps.length - 1, idx));
+            renderStepper();
+        }
+
+        function stepperGo(dir) {stepperTo(stepperIdx + dir);}
+
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // AB HIER: TECHNIK – normalerweise musst du hier nichts mehr ändern.
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        // ── Startseite aufbauen (Texte kommen aus PHASE 0 oben) ──
+        function buildHero() {
+            const vp = document.getElementById('slide-viewport');
+            const h = phases[0];
+            const hero = document.createElement('div');
+            hero.className = 'hero-slide active';
+            hero.id = 'slide-0';
+            const phaseLabels = phases.slice(1).map(p => p.label); // Zeitleiste aus den Kurznamen der Phasen
+            hero.innerHTML = `
+    <div class="hero-inner">
+      <h1 class="hero-title"><span class="ki">${h.titleLine1}</span><em>${h.titleLine2}<span class="dot-gold">.</span></em></h1>
+      <p class="hero-subtitle">${h.subtitle}</p>
+      <div class="hero-phases">
+        ${phaseLabels.map((label, i) => `
+          <div class="hero-phase-item">
+            <div class="hero-phase-dot ${i === 0 ? 'first' : ''}" style="--i:${i}"></div>
+            <div class="hero-phase-label">${label}</div>
+          </div>
+          ${i < phaseLabels.length - 1 ? '<div class="hero-phase-line"></div>' : ''}
+        `).join('')}
+      </div>
+      <button class="hero-cta" onclick="navigate(1)">${h.buttonText}</button>
+    </div>`;
+            vp.appendChild(hero);
+        }
+
+        // ── Folien-Technik ──
+        let currentSlide = 0;
+        let isAnimating = false;
+
+        function buildSlides() {
+            const vp = document.getElementById('slide-viewport');
+            const dotNav = document.getElementById('dot-nav');
+            dotNav.innerHTML = '';
+
+            const heroDot = document.createElement('div');
+            heroDot.className = 'dot active';
+            heroDot.setAttribute('data-label', phases[0].label);
+            heroDot.onclick = () => goTo(0);
+            dotNav.appendChild(heroDot);
+
+            phases.slice(1).forEach((p, i) => {
+                const idx = i + 1;
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.id = 'slide-' + idx;
+                slide.innerHTML = `
+      <div class="slide-left">
+        <div class="slide-bg-num">${idx}</div>
+        <div class="slide-eyebrow">${p.eyebrow}</div>
+        <h2 class="slide-title">${p.title}</h2>
+        <p class="slide-intro">${p.intro}</p>
+      </div>
+      <div class="slide-right" id="slide-right-${idx}"></div>`;
+                vp.appendChild(slide);
+                slide.querySelector('.slide-right').innerHTML = p.render();
+
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.setAttribute('data-label', p.label);
+                dot.onclick = () => goTo(idx);
+                dotNav.appendChild(dot);
+            });
+
+            updateUI();
+            renderStepper();
+        }
+
+        function goTo(idx) {
+            if (idx === currentSlide || isAnimating) return;
+            if (idx < 0 || idx >= phases.length) return;
+            isAnimating = true;
+            const dir = idx > currentSlide ? 1 : -1;
+
+            const numEl = document.getElementById('transition-num');
+            numEl.textContent = idx;
+            numEl.style.transition = 'none';
+            numEl.style.opacity = '0';
+            numEl.style.transform = 'translateY(15px)';
+            requestAnimationFrame(() => {
+                numEl.style.transition = 'opacity 0.2s ease,transform 0.2s ease';
+                numEl.style.opacity = '0.05';
+                numEl.style.transform = 'translateY(0)';
+                setTimeout(() => {numEl.style.opacity = '0'; numEl.style.transform = 'translateY(-15px)';}, 260);
+            });
+
+            const fromEl = document.getElementById('slide-' + currentSlide);
+            const toEl = document.getElementById('slide-' + idx);
+
+            fromEl.style.transition = 'opacity 0.35s ease,transform 0.35s cubic-bezier(.4,0,.2,1)';
+            fromEl.style.opacity = '0';
+            fromEl.style.transform = dir > 0 ? 'translateY(-22px)' : 'translateY(22px)';
+
+            toEl.style.transition = 'none';
+            toEl.style.opacity = '0';
+            toEl.style.transform = dir > 0 ? 'translateY(22px)' : 'translateY(-22px)';
+            toEl.classList.add('active');
+
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                toEl.style.transition = 'opacity 0.38s ease,transform 0.38s cubic-bezier(.4,0,.2,1)';
+                toEl.style.opacity = '1';
+                toEl.style.transform = 'translateY(0)';
+            }));
+
+            setTimeout(() => {
+                fromEl.classList.remove('active');
+                fromEl.style.transition = fromEl.style.opacity = fromEl.style.transform = '';
+                toEl.style.transition = '';
+                currentSlide = idx;
+                isAnimating = false;
+                updateUI();
+                // Klick-Anleitung beim Betreten der Phase wieder auf Schritt 1 setzen
+                if (toEl.querySelector('#ghStepper')) {stepperIdx = 0; renderStepper();}
+                const rp = document.getElementById('slide-right-' + idx);
+                if (rp) rp.scrollTop = 0;
+            }, 400);
+        }
+
+        function navigate(dir) {goTo(currentSlide + dir);}
+
+        function updateUI() {
+            document.getElementById('progress-fill').style.width = ((currentSlide + 1) / phases.length * 100) + '%';
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            const prev = document.getElementById('btn-prev');
+            const next = document.getElementById('btn-next');
+            const feedback = document.getElementById('btn-feedback');
+            prev.disabled = currentSlide === 0;
+            if (currentSlide === phases.length - 1) {
+                next.textContent = '✓ Fertig';            // ✏️ Text des Buttons auf der letzten Phase
+                next.onclick = () => launchConfetti(next);
+                if (feedback) feedback.style.display = 'inline-flex';
+            } else {
+                next.innerHTML = 'Weiter ↓';              // ✏️ Text des Weiter-Buttons
+                next.onclick = () => navigate(1);
+                if (feedback) feedback.style.display = 'none';
+            }
+            next.disabled = false;
+        }
+
+        // ── Konfetti beim Klick auf "Fertig" ──
+        function launchConfetti(btn) {
+            const rect = btn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top;
+            // ✏️ Farben der Konfetti-Schnipsel
+            const colors = ['#FFBF00', '#6900F4', '#0000F5', '#FFE800', '#3D008D', '#FFFFFF'];
+            const count = 48;
+
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 7 + 4;
+                const isRect = Math.random() > 0.5;
+                el.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px; width:${size}px; height:${isRect ? size * 0.4 : size}px;
+      background:${color}; border-radius:${isRect ? '1px' : '50%'};
+      pointer-events:none; z-index:9998; opacity:1;
+      transform:rotate(${Math.random() * 360}deg);
+    `;
+                document.body.appendChild(el);
+
+                const angle = (Math.random() * 160 - 130) * (Math.PI / 180);
+                const speed = Math.random() * 180 + 80;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                const duration = Math.random() * 800 + 600;
+                const startTime = performance.now();
+
+                (function animate(now) {
+                    const t = (now - startTime) / duration;
+                    if (t >= 1) {el.remove(); return;}
+                    const eased = 1 - t;
+                    el.style.left = (x + vx * t) + 'px';
+                    el.style.top = (y + vy * t + 200 * t * t) + 'px';
+                    el.style.opacity = eased;
+                    el.style.transform = `rotate(${t * 360 * (Math.random() > 0.5 ? 1 : -1)}deg)`;
+                    requestAnimationFrame(animate);
+                })(performance.now());
+            }
+        }
+
+        // ── Steuerung mit Pfeiltasten & Leertaste ──
+        document.addEventListener('keydown', e => {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+            if (e.key === 'ArrowDown' || e.key === ' ') {e.preventDefault(); navigate(1);}
+            else if (e.key === 'ArrowUp') {e.preventDefault(); navigate(-1);}
+            else if (e.key === 'ArrowRight') navigate(1);
+            else if (e.key === 'ArrowLeft') navigate(-1);
+        });
+
+        // ── Kopieren-Button ──
+        function copyPrompt(btn, promptId) {
+            const text = document.getElementById(promptId)?.textContent || '';
+            const finish = () => {
+                btn.classList.add('copied');
+                btn.innerHTML = `${IC.check}<span>Kopiert!</span>`;   // ✏️ Text nach dem Kopieren
+                setTimeout(() => {btn.classList.remove('copied'); btn.innerHTML = `${IC.copy}<span>Kopieren</span>`;}, 2500);
+            };
+            navigator.clipboard.writeText(text).then(finish).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); finish();
+            });
+        }
+
+        // ── Seite starten ──
+        buildHero();
+        buildSlides();
+
+        // ── EIGENER MAUSZEIGER (gelber Punkt) ──
+        // ✏️ Zum Entfernen: diesen ganzen Block löschen UND im CSS die Zeile
+        //    "* { cursor: none !important; }" löschen.
+        const cursorRing = document.createElement('div'); cursorRing.id = 'cursor-ring';
+        const cursorDot = document.createElement('div'); cursorDot.id = 'cursor-dot';
+        document.body.appendChild(cursorRing);
+        document.body.appendChild(cursorDot);
+        let mx = -200, my = -200, rx = -200, ry = -200;
+        document.addEventListener('mousemove', e => {mx = e.clientX; my = e.clientY;});
+        (function animCursor() {
+            rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+            cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+            cursorDot.style.left = mx + 'px'; cursorDot.style.top = my + 'px';
+            requestAnimationFrame(animCursor);
+        })();
+        const HOVER_TARGETS = 'button,a,.dot,.accordion-header,.nav-btn,.copy-btn,.next-step-card,.inspo-card,.vocab-card,.tool-card,.alt-card,.quadrant,.flow-step';
+        document.addEventListener('mouseover', e => document.body.classList.toggle('cursor-hover', !!e.target.closest(HOVER_TARGETS)));
+        document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+        document.addEventListener('mouseup', () => document.body.classList.remove('cursor-click'));
+
+        // ── ANIMIERTER PARTIKEL-HINTERGRUND DER STARTSEITE ──
+        // Punkte-Raster, das auf die Maus reagiert. Um den Text herum bleibt ein Freiraum,
+        // der genau der Form der Schrift folgt; von dort laufen pulsierende Wellen nach außen.
+        // ✏️ Zum Entfernen: diesen ganzen Block bis "initHeroCanvas();" löschen.
+        function initHeroCanvas() {
+            const hero = document.getElementById('slide-0');
+            if (!hero) return;
+            const canvas = document.createElement('canvas');
+            canvas.id = 'hero-canvas';
+            hero.prepend(canvas);
+            const ctx = canvas.getContext('2d');
+
+            // ── Einstellungen ──
+            const GAP = 18;               // Abstand der Punkte im Raster (px)
+            const BASE_R = 1.1;           // Größe der Punkte im Ruhezustand
+            const MAX_R = 3.4;            // Größe der Punkte direkt am Cursor / in der Welle
+            const RADIUS = 60;            // Wirkungsradius um den Cursor (px)
+            const SPEED = 0.18;           // Wie schnell Punkte reagieren (0–1)
+            const BASE_COLOR = [173, 173, 234]; // Ruhefarbe (#ADADEA)
+            const HOT_COLOR = [105, 0, 244];    // Farbe in Welle & am Cursor (#6900F4)
+            const CLEAR = 26;             // Freiraum um den Text, in dem keine Punkte sind (px)
+            const FADE = 70;              // Breite des weichen Übergangs danach (px)
+            const BREATHE = 8;            // Wie stark der Freiraum "atmet" (px)
+            const PULSE_EVERY = 3200;     // ✏️ Zeit zwischen zwei Wellen (ms) – passt zum CSS-Pulsieren
+            const PULSE_SPEED = 0.32;     // Geschwindigkeit der Welle (px pro ms)
+            const PULSE_WIDTH = 55;       // Breite der Welle (px)
+            const PULSE_STRENGTH = 0.6;   // Stärke der Welle (0–1)
+
+            let W, H, dots = [], mouse = {x: -9999, y: -9999};
+            const dpr = window.devicePixelRatio || 1;
+
+            // Kästen um jede Textzeile (nicht um den ganzen Block) → Freiraum folgt der Schrift
+            function textBoxes() {
+                const hr = hero.getBoundingClientRect();
+                const boxes = [];
+                hero.querySelectorAll('.hero-title .ki, .hero-title em, .hero-subtitle, .hero-phase-item, .hero-cta').forEach(el => {
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    const rects = el.classList.contains('hero-cta') || el.classList.contains('hero-phase-item')
+                        ? [el.getBoundingClientRect()] : [...range.getClientRects()];
+                    rects.forEach(r => r.width && boxes.push({l: r.left - hr.left, t: r.top - hr.top, r: r.right - hr.left, b: r.bottom - hr.top}));
+                });
+                return boxes;
+            }
+
+            function resize() {
+                W = hero.offsetWidth; H = hero.offsetHeight;
+                canvas.width = W * dpr; canvas.height = H * dpr;
+                canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                const boxes = textBoxes();
+                dots = [];
+                const offX = (W % GAP) / 2, offY = (H % GAP) / 2;
+                for (let y = offY; y <= H; y += GAP)
+                    for (let x = offX; x <= W; x += GAP) {
+                        let dist = Infinity;   // Abstand zum nächsten Text
+                        for (const b of boxes) {
+                            const dx = Math.max(b.l - x, 0, x - b.r), dy = Math.max(b.t - y, 0, y - b.b);
+                            dist = Math.min(dist, Math.hypot(dx, dy));
+                        }
+                        dots.push({x, y, dist, t: 0});   // t = 0 Ruhe, 1 = voll aktiv
+                    }
+            }
+
+            hero.addEventListener('mousemove', e => {
+                const r = hero.getBoundingClientRect();
+                mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+            });
+            hero.addEventListener('mouseleave', () => {mouse.x = -9999; mouse.y = -9999;});
+
+            function draw(now) {
+                requestAnimationFrame(draw);
+                if (!hero.classList.contains('active')) return; // Nur zeichnen, wenn die Startseite sichtbar ist
+                ctx.clearRect(0, 0, W, H);
+                const clear = CLEAR + BREATHE * (0.5 + 0.5 * Math.sin(now / PULSE_EVERY * Math.PI * 2));
+                const waveR = (now % PULSE_EVERY) * PULSE_SPEED;
+                const waveFade = Math.max(0, 1 - waveR / (PULSE_EVERY * PULSE_SPEED));
+                for (const d of dots) {
+                    const vis = Math.min(1, Math.max(0, (d.dist - clear) / FADE));
+                    if (vis <= 0) continue;
+                    const md = Math.hypot(d.x - mouse.x, d.y - mouse.y);
+                    const hover = md < RADIUS ? 1 - md / RADIUS : 0;
+                    const wave = Math.exp(-(((d.dist - waveR) / PULSE_WIDTH) ** 2)) * waveFade * PULSE_STRENGTH;
+                    d.t += (Math.max(hover, wave) - d.t) * SPEED;
+                    const c = BASE_COLOR.map((v, i) => Math.round(v + (HOT_COLOR[i] - v) * d.t));
+                    ctx.globalAlpha = vis;
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, BASE_R + (MAX_R - BASE_R) * d.t, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`;
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            document.fonts.ready.then(resize); // Nach dem Laden der Schriften neu vermessen
+            requestAnimationFrame(draw);
+        }
+        initHeroCanvas();
+    </script>
+</body>
+
+</html>
