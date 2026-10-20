@@ -335,6 +335,7 @@
         .slide-right {
             flex: 1;
             overflow-y: auto;
+            overflow-anchor: none;
             padding: 2.5rem 3rem 3rem;
             scrollbar-width: thin;
             scrollbar-color: var(--border) transparent;
@@ -847,13 +848,14 @@
             border-bottom-right-radius: 14px;
             overflow: hidden;
             max-height: 0;
-            transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1);
+            /* Die genaue Höhe setzt das JavaScript (toggleAcc) – so ist die Animation immer gleich weich */
+            transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1), visibility 0s linear 0.4s;
             visibility: hidden;
         }
 
         .accordion.open .accordion-body {
-            max-height: 2000px;
             visibility: visible;
+            transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1), visibility 0s;
         }
 
         .accordion-inner {
@@ -2309,17 +2311,6 @@
             transform: none;
         }
 
-        /* ── BAUSTEIN: Zahlen-Kacheln (große Zahl, Klick zeigt Details) ── */
-        .stat-number {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(40px, 4vw, 64px);
-            font-weight: 700;
-            line-height: 1;
-            color: #6900F4;
-            margin-bottom: 10px;
-            letter-spacing: -0.02em;
-        }
-
         /* ── Hinweis-Kasten "Was hilft" in aufklappbaren Karten ── */
         .fix-box {
             margin-top: 12px;
@@ -2420,6 +2411,58 @@
 
         .tl-line.past {
             background: #6900F4;
+        }
+
+        /* KI-Winter: gestrichelte, eisblaue Lücke in der Zeitleiste */
+        .tl-line.gap {
+            background: repeating-linear-gradient(90deg, #8DBCEB 0 8px, transparent 8px 15px);
+        }
+
+        .tl-node.gap {
+            color: #4A86C5;
+        }
+
+        .tl-node.gap .tl-dot {
+            background: #B9D8F5;
+        }
+
+        .tl-node.gap.active .tl-dot {
+            background: #4A86C5;
+            box-shadow: 0 0 0 6px rgba(74, 134, 197, 0.18);
+        }
+
+        /* KI-Winter: Schneeflocken & fast leere Batterie */
+        .vis-winter {
+            width: min(100%, 260px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .vis-winter .battery-low {
+            animation: battery-blink 1.2s ease-in-out infinite;
+        }
+
+        .snow {
+            position: absolute;
+            top: -24px;
+            left: var(--x);
+            font-size: var(--s);
+            line-height: 1;
+            color: #A9CCF0;
+            animation: snow-fall var(--t) linear var(--d) infinite;
+            pointer-events: none;
+        }
+
+        @keyframes battery-blink {
+            50% {
+                opacity: 0.25;
+            }
+        }
+
+        @keyframes snow-fall {
+            to {
+                transform: translateY(400px) rotate(180deg);
+            }
         }
 
         .stepper-grid {
@@ -2676,8 +2719,8 @@
         }
 
         /* ── FINALE: Abschluss-Satz in Phase 5 (der krönende Abschluss) ──
-   Leuchtender, umlaufender Farbrahmen · Wörter fliegen beim Betreten der Folie ein ·
-   Lichtreflex · aufsteigende Funken · hüpfendes Fragezeichen mit Wellen.
+   Langsam umlaufender Farbrahmen · Wörter blenden beim Betreten der Folie nacheinander ein ·
+   goldene Linie zeichnet sich darunter · dezenter Lichtreflex.
    ✏️ Farben des Rahmens: im conic-gradient von .finale ändern */
         @property --finale-angle {
             syntax: '<angle>';
@@ -2687,117 +2730,77 @@
 
         .finale {
             position: relative;
-            margin: 14px 0 4px;
-            padding: 3px;
-            border-radius: 24px;
-            background: conic-gradient(from var(--finale-angle), #6900F4, #0000F5, #FFBF00, #FFE800, #8B36FC, #6900F4);
-            animation: finale-spin 5s linear infinite, finale-breathe 3.2s ease-in-out infinite;
-        }
-
-        /* Weiches Leuchten des Rahmens nach außen */
-        .finale::before {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            border-radius: inherit;
-            background: conic-gradient(from var(--finale-angle), #6900F4, #0000F5, #FFBF00, #FFE800, #8B36FC, #6900F4);
-            filter: blur(22px);
-            opacity: 0.55;
-            z-index: -1;
-            animation: finale-spin 5s linear infinite;
+            margin: 12px 0 4px;
+            padding: 2px;
+            border-radius: 22px;
+            background: conic-gradient(from var(--finale-angle), #6900F4, #0000F5, #FFBF00, #8B36FC, #6900F4);
+            animation: finale-spin 9s linear infinite, finale-glow 4s ease-in-out infinite;
         }
 
         .finale-inner {
             position: relative;
             overflow: hidden;
-            border-radius: 21px;
-            padding: 16px 32px;
+            border-radius: 20px;
+            padding: 12px 32px 14px;
             text-align: center;
-            background: radial-gradient(ellipse at 50% 140%, #7A1FFF 0%, #3D008D 55%, #1A0045 100%);
+            background: linear-gradient(135deg, #1A0045 0%, #3D008D 55%, #2A0070 100%);
         }
 
-        /* Lichtreflex, der über die Fläche gleitet */
-        .finale-inner::after {
+        /* Dezenter Lichtreflex, der langsam über die Fläche gleitet */
+        .finale-inner::before {
             content: '';
             position: absolute;
             top: -20%;
             bottom: -20%;
             left: -40%;
-            width: 30%;
-            background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+            width: 25%;
+            background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.10), transparent);
             transform: skewX(-20deg);
-            animation: finale-glare 5s ease-in-out 2s infinite;
+            animation: finale-glare 7s ease-in-out 2.5s infinite;
             pointer-events: none;
         }
 
         .finale-text {
             position: relative;
-            z-index: 1;
             font-family: 'Outfit', sans-serif;
             font-size: clamp(26px, 2.7vw, 44px);
-            font-weight: 700;
+            font-weight: 600;
             line-height: 1.15;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.015em;
             color: #FFFFFF;
-            text-shadow: 0 0 24px rgba(139, 54, 252, 0.9);
         }
 
-        .finale-word {
+        /* Goldene Linie, die sich nach dem Satz von der Mitte aus zeichnet */
+        .finale-text::after {
+            content: '';
+            display: block;
+            width: 140px;
+            height: 3px;
+            margin: 8px auto 0;
+            border-radius: 2px;
+            background: linear-gradient(90deg, transparent, #FFBF00, transparent);
+            transform: scaleX(0);
+        }
+
+        .slide.active .finale-text::after {
+            animation: finale-line 0.9s cubic-bezier(.3, 0, .2, 1) 1.5s both;
+        }
+
+        .finale-word,
+        .finale-q {
             display: inline-block;
-        }
-
-        /* Wörter fliegen nacheinander ein, sobald die Folie sichtbar wird */
-        .slide.active .finale-word,
-        .slide.active .finale-q {
-            animation: finale-word-in 0.7s cubic-bezier(.2, 1.4, .4, 1) both;
-            animation-delay: calc(0.45s + var(--i) * 0.1s);
         }
 
         .finale-q {
-            position: relative;
-            display: inline-block;
-            margin-left: 0.04em;
+            margin-left: 0.03em;
             color: #FFBF00;
-            text-shadow: 0 0 18px rgba(255, 191, 0, 0.9), 0 0 40px rgba(255, 191, 0, 0.5);
         }
 
+        /* Wörter blenden nacheinander ein, sobald die Folie sichtbar wird */
+        .slide.active .finale-word,
         .slide.active .finale-q {
-            animation: finale-word-in 0.7s cubic-bezier(.2, 1.4, .4, 1) both, finale-q-bounce 1.6s ease-in-out infinite;
-            animation-delay: calc(0.45s + var(--i) * 0.1s), calc(1.4s + var(--i) * 0.1s);
-        }
-
-        /* Wellen, die vom Fragezeichen ausgehen */
-        .finale-q i {
-            position: absolute;
-            left: 50%;
-            top: 55%;
-            width: 1.3em;
-            height: 1.3em;
-            border: 2px solid #FFBF00;
-            border-radius: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.3);
-            animation: finale-q-ring 2.4s ease-out 1.6s infinite;
-            pointer-events: none;
-        }
-
-        .finale-q i + i {
-            animation-delay: 2.8s;
-        }
-
-        /* Aufsteigende goldene Funken */
-        .finale-sparks i {
-            position: absolute;
-            bottom: -8px;
-            left: var(--x);
-            width: var(--s);
-            height: var(--s);
-            border-radius: 50%;
-            background: #FFE800;
-            box-shadow: 0 0 8px 2px rgba(255, 232, 0, 0.7);
-            opacity: 0;
-            animation: finale-spark var(--t) linear var(--d) infinite;
-            pointer-events: none;
+            animation: finale-word-in 0.6s cubic-bezier(.2, .7, .2, 1) both;
+            animation-delay: calc(0.45s + var(--i) * 0.08s);
         }
 
         @keyframes finale-spin {
@@ -2806,17 +2809,22 @@
             }
         }
 
-        @keyframes finale-breathe {
+        @keyframes finale-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 10px 30px rgba(61, 0, 141, 0.25);
+            }
+
             50% {
-                transform: scale(1.015);
-                box-shadow: 0 14px 50px rgba(105, 0, 244, 0.45);
+                box-shadow: 0 12px 44px rgba(105, 0, 244, 0.42);
             }
         }
 
         @keyframes finale-glare {
 
             0%,
-            60% {
+            70% {
                 left: -40%;
             }
 
@@ -2828,42 +2836,14 @@
         @keyframes finale-word-in {
             from {
                 opacity: 0;
-                transform: translateY(0.7em) scale(0.7);
-                filter: blur(8px);
+                transform: translateY(0.35em);
+                filter: blur(4px);
             }
         }
 
-        @keyframes finale-q-bounce {
-            50% {
-                transform: translateY(-0.12em) scale(1.12);
-            }
-        }
-
-        @keyframes finale-q-ring {
-            0% {
-                opacity: 0.9;
-                transform: translate(-50%, -50%) scale(0.3);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(2.6);
-            }
-        }
-
-        @keyframes finale-spark {
-            0% {
-                opacity: 0;
-                transform: translateY(0);
-            }
-
-            15% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateY(-150px);
+        @keyframes finale-line {
+            to {
+                transform: scaleX(1);
             }
         }
 
@@ -2872,9 +2852,13 @@
 
             .finale,
             .finale *,
-            .finale::before,
-            .finale-inner::after {
+            .finale-inner::before,
+            .finale-text::after {
                 animation: none !important;
+            }
+
+            .finale-text::after {
+                transform: none;
             }
         }
 
@@ -3088,23 +3072,55 @@
     <div class="accordion-body"><div class="accordion-inner">${innerHtml}</div></div>
   </div>`;
         }
+        // Öffnet eine Box und schließt dabei alle anderen offenen Boxen derselben Phase.
+        // ✏️ Sollen mehrere Boxen gleichzeitig offen bleiben dürfen? ONLY_ONE_OPEN auf false setzen.
+        const ONLY_ONE_OPEN = true;
+        const ACC_DURATION = 400; // Dauer der Auf-/Zu-Animation in ms (wie im CSS bei .accordion-body)
+
         function toggleAcc(id) {
             const el = document.getElementById('acc-' + id);
-            if (el.classList.toggle('open')) countUp(el);
+            const opening = !el.classList.contains('open');
+            const container = el.closest('.slide-right');
+            if (opening && ONLY_ONE_OPEN && container) {
+                container.querySelectorAll('.accordion.open').forEach(other => other !== el && setAccOpen(other, false));
+            }
+            setAccOpen(el, opening);
+            if (opening && container) keepInView(el, container);
         }
 
-        // Zahlen wie <span class="count" data-to="53">53</span> zählen beim Öffnen von 0 hoch
-        function countUp(root) {
-            root.querySelectorAll('.count').forEach(el => {
-                const to = parseFloat(el.dataset.to), dec = +(el.dataset.dec || 0), start = performance.now();
-                const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits: dec, maximumFractionDigits: dec});
-                (function step(now) {
-                    const t = Math.min(1, Math.max(0, (now - start) / 1400));
-                    el.textContent = fmt(to * (1 - Math.pow(1 - t, 3)));
-                    if (t < 1) requestAnimationFrame(step);
-                })(start);
-            });
+        function setAccOpen(el, open) {
+            const body = el.querySelector('.accordion-body');
+            const token = body._accToken = (body._accToken || 0) + 1;
+            if (open) {
+                el.classList.add('open');
+                body.style.maxHeight = body.scrollHeight + 'px';
+                // Nach der Animation Höhe freigeben, damit Inhalte darin (Karten, Historie) wachsen dürfen
+                setTimeout(() => {if (body._accToken === token && el.classList.contains('open')) body.style.maxHeight = 'none';}, ACC_DURATION + 50);
+            } else {
+                body.style.maxHeight = body.scrollHeight + 'px'; // von "none" auf die echte Höhe …
+                body.offsetHeight;                               // … übernehmen lassen …
+                el.classList.remove('open');
+                body.style.maxHeight = '0px';                    // … und dann weich zuklappen
+            }
         }
+
+        // Während oben eine Box zuklappt, bleibt die angeklickte Box ruhig an ihrer Stelle stehen.
+        // Danach wird bei Bedarf sanft so gescrollt, dass der neue Inhalt sichtbar ist.
+        function keepInView(el, container) {
+            const header = el.querySelector('.accordion-header');
+            const startTop = header.getBoundingClientRect().top;
+            const start = performance.now();
+            (function frame() {
+                const drift = header.getBoundingClientRect().top - startTop;
+                if (Math.abs(drift) > 0.5) container.scrollTop += drift;
+                if (performance.now() - start < ACC_DURATION + 60) return requestAnimationFrame(frame);
+                const c = container.getBoundingClientRect(), r = el.getBoundingClientRect();
+                if (r.bottom > c.bottom - 8 || r.top < c.top) {
+                    container.scrollBy({top: Math.min(r.top - c.top - 16, r.bottom - c.bottom + 24), behavior: 'smooth'});
+                }
+            })();
+        }
+
         function toggleNextStep(el) {el.classList.toggle('open');}
 
 
@@ -3146,7 +3162,7 @@
                 label: "Start",                                  // ✏️ Name im Punkte-Menü rechts
                 titleLine1: "Digitalisierung in der ",              // ✏️ große fette Zeile
                 titleLine2: "Verwaltung",                         // ✏️ kursive lila Zeile (der gelbe Punkt kommt automatisch dahinter)
-                subtitle: "Fachvortrag Transferzentrum für Digitalisierung, Analytics & Data Science Ulm", // ✏️
+                subtitle: "Fachvortrag des Transferzentrums für Digitalisierung, Analytics & Data Science Ulm", // ✏️
                 buttonText: "Los geht's",                      // ✏️ Text auf dem großen Start-Button
             },
 
@@ -3156,8 +3172,8 @@
             {
                 label: "Motivation",                 // ✏️ Kurzname der Phase
                 eyebrow: "Phase 1",                    // ✏️ kleine Überzeile links
-                title: "Warum Digitalisierung",    // ✏️ große Überschrift links
-                intro: "Digitalisierung soll Freiräume für das Wesentliche schaffen: Weniger sinnloses Papier, schnellere Abläufe und mehr Zeit für die Menschen, um die es wirklich geht.", // ✏️ Einleitung links
+                title: "Warum Digitalisierung?",    // ✏️ große Überschrift links
+                intro: "Digitalisierung soll Freiräume für das Wesentliche schaffen: weniger sinnloses Papier, schnellere Abläufe und mehr Zeit für die Menschen, um die es wirklich geht.", // ✏️ Einleitung links
                 render: () => `
 
         <!-- ▼ BAUSTEIN: AKKORDEON MIT BEGRIFFS-KARTEN ▼
@@ -3175,7 +3191,7 @@
       `)}
       <!-- ▲ ENDE BAUSTEIN ▲ -->
 
-      <!-- ▼ BAUSTEIN: VERGLEICH PRIVAT vs. BÜRO + ZAHLEN-KACHELN ▼ -->
+      <!-- ▼ BAUSTEIN: VERGLEICH PRIVAT vs. BÜRO + KERNAUSSAGE ▼ -->
       ${acc('p1-erklaerung', 'book', 'Warum brauchen wir Digitalisierung?', 'Privat sind wir längst digital – im Job oft noch nicht', `
 
         <div class="section-label">${IC.zap} Privat vs. im Büro</div>
@@ -3184,10 +3200,9 @@
              Der Button blendet die Büro-Balken ein. -->
         <div class="compare">
           ${[
-            ['Dokument finden', 'Suchleiste am Handy', '5 Sek.', '3%', 'Ordner & Laufwerke durchsuchen', '20 Min.', '26%'],
-            ['Unterschreiben', 'Freigabe per Fingerabdruck', '3 Sek.', '2%', 'Drucken, unterschreiben, scannen', '15 Min.', '22%'],
-            ['Termin finden', 'Arzttermin online buchen', '1 Min.', '5%', 'E-Mail-Pingpong mit fünf Leuten', '2 Tage', '38%'],
-            ['Urlaub', 'Reise in der App buchen', '5 Min.', '7%', 'Urlaubsantrag auf Papier', '3 Tage', '46%'],
+            ['Dokument finden', 'Suchleiste am Handy', '10 Sek.', '5%', 'Ordner & Laufwerke durchsuchen', '10 Min.', '26%'],
+            ['Legitimation', 'Freigabe per Face-ID', '3 Sek.', '2%', 'Drucken, unterschreiben, scannen', '15 Min.', '22%'],
+            ['Termin finden', 'WhatsApp-Umfrage', '10 Min.', '10%', 'E-Mail-Pingpong mit fünf Leuten', '2 Tage', '38%'],
           ].map(([task, priv, privTime, privW, work, workTime, workW]) => `
             <div class="cmp-row">
               <div class="cmp-task">${task}</div>
@@ -3198,30 +3213,8 @@
             </div>`).join('')}
           <div class="compare-foot">
             <button class="btn primary compare-btn" onclick="this.closest('.compare').classList.toggle('show-work')">Und im Büro? →</button>
-            <div class="cmp-punch">Den Urlaub buchen: 5 Minuten. Ihn beantragen: 3 Tage.</div>
           </div>
           <div class="source">Typische Alltagsbeispiele – Balken nicht maßstabsgetreu.</div>
-        </div>
-
-        <div class="section-label">${IC.search} Zahlen, die überzeugen</div>
-
-        <!-- ✏️ ZAHLEN-KACHELN: Jede Zeile = [ große Zahl, Titel, Untertitel, Details (beim Klick), Quelle ]
-             <span class="count" data-to="19">19</span> zählt beim Öffnen hoch (data-dec = Nachkommastellen). -->
-        <div class="next-steps">
-          ${[
-            ['<span class="count" data-to="19">19</span> %', 'Suchen statt arbeiten', 'der Arbeitszeit gehen fürs Suchen und Zusammentragen von Informationen drauf', 'Das ist fast <strong>ein ganzer Tag pro Woche</strong> – für Ordner, Laufwerke, Postfächer und „Weißt du, wo …?“. Digital ist jedes Dokument in Sekunden gefunden.', 'McKinsey Global Institute (2012)'],
-            ['<span class="count" data-to="1.39" data-dec="2">1,39</span> Mio.', 'Die Rentenwelle rollt', 'Beschäftigte im öffentlichen Dienst gehen in den nächsten 10 Jahren in Rente', 'Das sind <strong>27 Prozent</strong> – und schon heute fehlen rund 631.000 Beschäftigte. Mit Neueinstellungen allein ist diese Lücke nicht zu schließen.<br><br><strong>Deshalb:</strong> Routinearbeit muss wegfallen, damit Zeit für die Menschen bleibt.', 'dbb beamtenbund und tarifunion'],
-            ['<span class="count" data-to="53">53</span> Mio.', 'Blatt Papier', 'verbrauchten Bundesregierung und Bundesbehörden allein im Jahr 2022', '<strong>Bildhaft:</strong> Damit ließe sich das gesamte Stadtgebiet von Offenbach am Main bedecken – und für die Herstellung wurden über 6.000 Bäume gefällt.', ''],
-            ['2029', 'Digital wird Pflicht', 'Ab dann gibt es einen Rechtsanspruch auf digitale Verwaltungsleistungen', 'Das OZG 2.0 gibt Bürgern ab 2029 ein Recht auf digitalen Zugang zu Bundesleistungen. Unternehmensleistungen sollen spätestens 2030 nur noch elektronisch angeboten werden, und das Schriftformerfordernis fällt weg.<br><br><strong>Folge:</strong> Die Erwartung wird bis in jede Organisation durchschlagen.', 'Onlinezugangsgesetz (OZG 2.0)'],
-          ].map(([num, title, sub, detail, source]) => `
-            <div class="next-step-card" onclick="toggleNextStep(this)">
-              <div class="stat-number">${num}</div>
-              <div class="next-step-title">${title}</div>
-              <div class="next-step-sub">${sub}</div>
-              <div class="next-step-detail">
-                <div class="next-step-detail-inner">${detail}${source ? `<div class="source">Quelle: ${source}</div>` : ''}</div>
-              </div>
-            </div>`).join('')}
         </div>
 
         <!-- ✏️ KERNAUSSAGE am Ende -->
@@ -3245,7 +3238,7 @@
             [IC.lock, '„Dürfen wir das überhaupt?“', 'Unsicherheit bei Datenschutz & Recht', 'DSGVO, Schriftform, Aufbewahrungspflichten: Im Zweifel bleibt man lieber beim Papier.', 'Datenschutz von Anfang an mit ins Boot holen und auf geprüfte Werkzeuge setzen.'],
             [IC.layers, '„Vorne online, hinten ausgedruckt.“', 'Halbe Digitalisierung & Insellösungen', 'Das Formular ist digital, die Bearbeitung nicht. 2024 war fehlende Durchgängigkeit mit <strong>57 Prozent</strong> die größte Hürde für Nutzung und Zufriedenheit.', 'Den ganzen Prozess von Anfang bis Ende betrachten – nicht nur das Formular.'],
             [IC.help, '„Wer kennt sich damit eigentlich aus?“', 'Fehlendes Know-how', 'Digitale Kompetenzen sind ungleich verteilt, IT-Fachkräfte rar. Ein, zwei Menschen tragen alles – bis sie im Urlaub sind.', 'Kurze Schulungen im Arbeitsalltag, Wissen teilen und externe Partner wie die DASU nutzen.'],
-            [IC.coins, '„Was kostet das – und was bringt’s?“', 'Unklarer Nutzen, knappes Budget', 'Ohne greifbaren Nutzen gibt es kein Budget. Ohne Budget kein Projekt. Ohne Projekt kein Nutzen.', 'Mit Quick Wins starten (siehe Aufwand/Nutzen-Matrix in Phase 4) und den Erfolg messbar machen.'],
+            [IC.coins, '„Was kostet das – und was bringt’s?“', 'Unklarer Nutzen, knappes Budget', 'Ohne greifbaren Nutzen gibt es kein Budget. Ohne Budget kein Projekt. Ohne Projekt kein Nutzen.', 'Mit Quick Wins starten (siehe Aufwand-Nutzen-Matrix in Phase 4) und den Erfolg messbar machen.'],
           ].map(([icon, quote, blocker, detail, fix]) => `
             <div class="next-step-card" onclick="toggleNextStep(this)">
               <div class="next-step-icon">${icon}</div>
@@ -3308,20 +3301,20 @@
             {
                 label: "Praxis",
                 eyebrow: "Phase 3",
-                title: "Was kann man damit machen",
+                title: "Was kann man damit machen?",
                 intro: "Genug Theorie: Hier zeigen wir, wo KI in der Verwaltung schon heute konkret hilft.",
                 render: () => `
 
       <!-- ▼ BAUSTEIN: Einzelne breite Link-Karte  ▼-->
-      ${acc('p3-Alltag', 'cpu', 'Wo hilft KI im Verwaltungsalltag', 'Ein Bespiel zum Thema <strong>Informationsextraktion</strong>', `
+      ${acc('p3-Alltag', 'cpu', 'Wo hilft KI im Verwaltungsalltag?', 'Ein Beispiel zum Thema <strong>Informationsextraktion</strong>', `
     
         <div class="inspo-grid" style="grid-template-columns:1fr;">
             <a class="inspo-card" href="https://app3.dasu-digilab.de/" target="_blank" rel="noopener">
                 <div class="inspo-card-icon" style="background:#4285F4">
                     <svg viewBox="0 0 24 24" width="16" height="16"><text x="3" y="16" font-size="12" font-weight="700" fill="white" font-family="Georgia,serif">Aa</text></svg>
                 </div>
-                <strong>Praxisbeipiel </strong>
-                <p>Extrahiere automatisch die wichtigsten Infrmationen aus deinen Dokumenten.</p>
+                <strong>Praxisbeispiel</strong>
+                <p>Extrahieren Sie automatisch die wichtigsten Informationen aus Ihren Dokumenten.</p>
                 <span>↗ [digilab.de]</span>
             </a>
         </div>
@@ -3336,7 +3329,7 @@
             {
                 label: "Werkzeug",
                 eyebrow: "Phase 4",
-                title: "Wie bringe ich ein KI Projekt auf die Straße?",
+                title: "Wie bringe ich ein KI-Projekt auf die Straße?",
                 intro: "Klein anfangen, schnell lernen, gezielt ausbauen: So gelingt der Weg von der Idee zur Umsetzung.",
                 render: () => `
 
@@ -3348,17 +3341,17 @@
             <strong>Ein mögliches Template</strong>
             <!-- ✏️ Die hellgrauen Texte (class="placeholder") sind nur Beispiele -->
             <ul>
-              <li><strong>Name:</strong> <span class="placeholder">KI-Posteingang – Anfragen automatisch vorsortieren</span></li>
-              <li><strong>Mehrwert:</strong> <span class="placeholder">Jede Anfrage landet sofort beim richtigen Team – ca. 1 Stunde weniger Sortieren pro Tag</span></li>
-              <li><strong>Challenge:</strong> <span class="placeholder">Viele Formate (Mail, Brief, Formular) und sensible Personendaten</span></li>
-              <li><strong>Bereich:</strong> <span class="placeholder">Sekretariat & Verwaltung</span></li>
-              <li><strong>Daten:</strong> <span class="placeholder">E-Mails, eingescannte Briefe, Zuständigkeitsliste</span></li>
+              <li><strong>Name:</strong> <span class="placeholder">Automatisiertes Mailpostfach</span></li>
+              <li><strong>Mehrwert:</strong> <span class="placeholder">Jede Anfrage wird automatisch vorsortiert und durch Hinweise unterstützt</span></li>
+              <li><strong>Challenge:</strong> <span class="placeholder">Teilweise ist es auch als Mensch schwierig diese Auswahl zu treffen. Datenschutz, da sensible Personendaten verarbeitet werden</span></li>
+              <li><strong>Bereich:</strong> <span class="placeholder">Persönliches Postfach, aber auch Sekretariat & Verwaltung</span></li>
+              <li><strong>Daten & Tools:</strong> <span class="placeholder">E-Mails (.msg) und Outlook (M365)</span></li>
             </ul>
             </div>
         </div>
       `)}
 
-      ${acc('p4-aufwand', 'rocket', 'Aufwand / Nutzen Matrix', 'Bewerten, Vergleichen & Priorisieren', `
+      ${acc('p4-aufwand', 'rocket', 'Aufwand-Nutzen-Matrix', 'Bewerten, vergleichen & priorisieren', `
         <div class="card">
             <div class="card-text">
             <strong>Priorisierung von Use Cases</strong><br>
@@ -3389,7 +3382,7 @@
       `)}
 
 
-      ${acc('p4-UseCAse', 'rocket', 'Roadmap ', 'Wie bringt man einen Use Case zum "leben"?', `
+      ${acc('p4-UseCAse', 'rocket', 'Roadmap', 'Wie bringt man einen Use Case zum Leben?', `
         <div class="card">
             <div class="card-text">
             <strong>Vorgehen</strong><br>
@@ -3400,7 +3393,7 @@
               ${[
                 ['tile-idea', IC.lightbulb, 'Eigener Use Case', 'Idee & Problem'],
                 ['tile-openai', IC.openai, 'GenAI', 'ChatGPT'],
-                ['tile-doc', IC.fileText, 'One Pager', 'PDF'],
+                ['tile-doc', IC.fileText, 'One-Pager', 'PDF'],
                 ['tile-anthropic', IC.anthropic, 'GenAI', 'Claude'],
                 ['tile-proto', IC.appWindow, 'Prototyp', 'Klickbare App'],
               ].map(([tile, icon, label, sub], i) => `
@@ -3456,8 +3449,8 @@
           <div class="contact-glow"></div>
           <div class="contact-hero-inner">
             <div class="contact-overline">Ihr Projekt</div>
-            <div class="contact-name" style="font-size:26px; margin-bottom:8px;">Bringen Sie Ihr KI Projekt zum Leben und kommen Sie in den Austausch</div>
-            <div class="contact-org" style="margin-bottom:1.25rem;">Beantworten Sie ein paar fragen und kommen Sie ins Gespräch.</div>
+            <div class="contact-name" style="font-size:26px; margin-bottom:8px;">Bringen Sie Ihr KI-Projekt zum Leben und kommen Sie in den Austausch</div>
+            <div class="contact-org" style="margin-bottom:1.25rem;">Beantworten Sie ein paar Fragen und kommen Sie ins Gespräch.</div>
             <!-- ✏️ Link zum Fragebogen (Microsoft Forms) – derselbe wie im QR-Code -->
             <a class="contact-email" href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Vx3gLwOnR029y_7Z7t3Jx1FpCmualC5OifxY49Jq6LVUQks4VlVZRFIyVlI1UUZVVVNVN0kyRE1ZVy4u" target="_blank" rel="noopener" style="font-size:15px; padding:11px 22px;">${IC.arrowRight} Zum Fragebogen</a>
             <div class="qr-slot" style="margin-top:28px; margin-bottom:16px; display:flex; justify-content:center;">
@@ -3473,10 +3466,8 @@
       ${((sentence) => `
       <div class="finale">
         <div class="finale-inner">
-          <span class="finale-sparks">${[...Array(16)].map((_, i) =>
-            `<i style="--x:${(i * 37 + 7) % 100}%; --s:${3 + i % 3}px; --t:${2.6 + (i % 4) * 0.5}s; --d:${(i * 0.43) % 3}s"></i>`).join('')}</span>
           <div class="finale-text">${sentence.split(' ').map((word, i) =>
-            `<span class="finale-word" style="--i:${i}">${word}</span>`).join(' ')}<span class="finale-q" style="--i:${sentence.split(' ').length}">?<i></i><i></i></span></div>
+            `<span class="finale-word" style="--i:${i}">${word}</span>`).join(' ')}<span class="finale-q" style="--i:${sentence.split(' ').length}">?</span></div>
         </div>
       </div>`)('Sind Sie bereit, den ersten Schritt zu gehen')}
             `
@@ -3493,11 +3484,15 @@
         //     desc   → Beschreibung (HTML erlaubt: <strong>, <br>, <a href='...'>)
         //     tip    → grüner Hinweis-Kasten unter dem Schritt
         //     visual → Name der Animation rechts (siehe "historyVisuals" darunter)
+        //     gap    → true = Phase des Stillstands, wird in der Zeitleiste gestrichelt dargestellt
         // ═══════════════════════════════════════════════════════════════════════════
         const stepperSteps = [
             {year: '1956', visual: 'computer', title: 'Die Geburtsstunde der KI',
                 desc: 'Ein Sommer in Dartmouth (USA): Forscher um John McCarthy treffen sich mit einer kühnen Annahme – <strong>jeder Aspekt von Lernen und Intelligenz</strong> lässt sich so genau beschreiben, dass eine Maschine ihn nachahmen kann.',
                 tip: 'Der Begriff „Künstliche Intelligenz“ ist geboren. Die Vorarbeit kam von Alan Turing: „Können Maschinen denken?“ (1950)'},
+            {year: '1974–93', visual: 'winter', gap: true, title: 'Der KI-Winter',
+                desc: 'Die großen Versprechen bleiben unerfüllt: Computer sind viel zu langsam, Speicher ist extrem teuer. Fördergelder werden gestrichen – die Forschung kommt <strong>gleich zweimal fast zum Stillstand</strong> (1974–1980 und 1987–1993).',
+                tip: 'Die Ideen waren da – nur die Rechenpower fehlte. Ein heutiges Smartphone rechnet millionenfach schneller als die Großrechner von damals.'},
             {year: '1997', visual: 'chess', title: 'Maschine schlägt Weltmeister',
                 desc: 'IBMs Schachcomputer <strong>Deep Blue</strong> besiegt Weltmeister Garri Kasparow. Er berechnet rund <strong>200 Millionen Stellungen pro Sekunde</strong>.',
                 tip: 'Zum ersten Mal schlägt eine Maschine den besten Menschen in seiner Paradedisziplin.'},
@@ -3535,6 +3530,16 @@
                   <rect x="40" y="154" width="160" height="6" rx="3" fill="#8B6FD8"/>
                 </svg>
                 <div class="vis-caption">Dartmouth College, Sommer 1956</div>`,
+
+            winter: () => `
+                ${[...Array(14)].map((_, i) =>
+                  `<span class="snow" style="--x:${(i * 29 + 5) % 96}%; --s:${12 + (i % 3) * 6}px; --t:${4 + (i % 4)}s; --d:${-((i * 0.9) % 5)}s">❄︎</span>`).join('')}
+                <svg class="vis-winter vis-pop" viewBox="0 0 220 120">
+                  <rect x="20" y="20" width="160" height="80" rx="14" fill="#FFFFFF" stroke="#3D008D" stroke-width="6"/>
+                  <rect x="183" y="44" width="14" height="32" rx="4" fill="#3D008D"/>
+                  <rect class="battery-low" x="32" y="32" width="26" height="56" rx="6" fill="#DC2626"/>
+                </svg>
+                <div class="vis-caption">Zu wenig Rechenleistung – die Forschung liegt auf Eis</div>`,
 
             chess: () => {
                 const pieces = {'2-2': '♛', '1-6': '♜', '3-6': '♞', '5-1': '♝', '3-3': '♟', '2-5': '♟'};
@@ -3595,8 +3600,8 @@
             const last = stepperSteps.length - 1;
             bar.style.width = ((stepperIdx + 1) / stepperSteps.length * 100) + '%';
             timeline.innerHTML = stepperSteps.map((s, i) => `
-              ${i ? `<span class="tl-line ${i <= stepperIdx ? 'past' : ''}"></span>` : ''}
-              <button class="tl-node ${i < stepperIdx ? 'past' : ''} ${i === stepperIdx ? 'active' : ''}" onclick="stepperTo(${i})">
+              ${i ? `<span class="tl-line ${i <= stepperIdx ? 'past' : ''} ${s.gap || stepperSteps[i - 1].gap ? 'gap' : ''}"></span>` : ''}
+              <button class="tl-node ${i < stepperIdx ? 'past' : ''} ${i === stepperIdx ? 'active' : ''} ${s.gap ? 'gap' : ''}" onclick="stepperTo(${i})">
                 <span class="tl-dot"></span>${s.year}
               </button>`).join('');
             const step = stepperSteps[stepperIdx];
